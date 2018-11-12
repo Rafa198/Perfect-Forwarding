@@ -7,14 +7,8 @@
 class useQtThread : public QThread
 {
 public:
-
   useQtThread(void f());
-public slots:
 
-signals:
-
-protected:
-  //void run()  override;
 };
 
 #endif // USEQTTHREAD_H

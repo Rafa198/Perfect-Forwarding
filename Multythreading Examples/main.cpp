@@ -38,7 +38,6 @@ const int numElementsForAddOneThread = 1000;
 
 int main()
 {
-
     boost::thread t{pushInVector};
     std::thread t1(pushInVector);
     QFuture<void> future = QtConcurrent::run(pushInVector);
@@ -116,20 +115,4 @@ void pushInVector()
 
     mtx.unlock();
     std::this_thread::sleep_for(std::chrono::seconds(5));
-}
-
-void Print(char a)
-{
-    mtx.lock();
-    cout << "ID " << std::this_thread::get_id() << endl;
-
-    for(int i = 0; i < 5; i++)
-    {
-        for(int j = 0; j < 5; j++)
-        {
-            cout << a;
-        }
-        cout << endl;
-    }
-    mtx.unlock();
 }
