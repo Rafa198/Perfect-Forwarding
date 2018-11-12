@@ -7,7 +7,6 @@
 #include <random>
 #include <future>
 
-
 #include <QString>
 #include <QtConcurrent/QtConcurrent>
 #include <QMutex>
@@ -34,7 +33,7 @@ void Print(char a);
 std::string func(std::future<int> &f);
 
 const int stringLength = 10;
-const int numElementsForAddOneThread = 1000;
+const int numElements = 1000;
 
 int main()
 {
@@ -48,6 +47,7 @@ int main()
     boost::asio::io_context::strand strand_1(ioserv);
     ioserv.post(strand_1.wrap(boost::bind(pushInVector)));
     ioserv.run();
+    //
 
     t.join();
     t1.join();
@@ -55,6 +55,12 @@ int main()
     //qtThread.start();
 
     return 0;
+}
+
+int Srandom(int a, int b)
+{
+  std::uniform_int_distribution<int> dist_a_b(a, b);
+  return dist_a_b(rng);
 }
 
 std::string func(std::future<int> &f)
@@ -70,12 +76,6 @@ std::string func(std::future<int> &f)
   return read;
 }
 
-int Srandom(int a, int b)
-{
-  std::uniform_int_distribution<int> dist_a_b(a, b);
-  return dist_a_b(rng);
-}
-
 void pushInVector()
 {
   mtx.lock();
@@ -86,7 +86,7 @@ void pushInVector()
   cout << "\tID THREAD: " << QThread::currentThreadId()
        << " (" << std::this_thread::get_id() << ")" << endl;
 
-    for(int i = 0; i < numElementsForAddOneThread; i++)
+    for(int i = 0; i < numElements; i++)
     {
         for(int j = 0; j < stringLength; j++)
         {
