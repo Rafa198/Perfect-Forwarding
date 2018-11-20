@@ -15,6 +15,18 @@ ApplicationWindow {
     property string imageLocation: "";
     property var currentFrame: undefined
     property var imageFilters : ["*.png", "*.jpg"];
+    property real currentTimestamp;
+
+    function updateTime () {
+            var now = new Date ();
+            currentTimestamp = now.getTime ();
+        }
+    Timer {
+            interval: 3000;
+            repeat: true;
+            running: true;
+            onTriggered: { updateTime (); }
+        }
 
     FileDialog {
         id: fileDialog
@@ -55,17 +67,16 @@ ApplicationWindow {
                 Column {
                 Text {
                     color: "white"
-                    text: "Name: " + imginfo.getFileName(folderModel.folder + fileName);
+                    text: " Name: " + imginfo.getFileName(folderModel.folder + fileName);
 
                 }
                 Text {
                     color: "white"
-                    text: "Last edit: " + imginfo.getFileLastModified(folderModel.folder + fileName);
+                    text: " Last edit: " + imginfo.getFileLastModified(folderModel.folder + fileName);
                 }
                 Text {
                     color: "white"
-                    text: "Last open: " + imginfo.getFileLastRead(folderModel.folder + fileName);
-
+                    text: " Last open: " + imginfo.getFileLastRead(folderModel.folder + fileName);
                 }
                 }
                     }
@@ -73,8 +84,6 @@ ApplicationWindow {
             PinchArea {
                 anchors.fill: parent
                 pinch.target: imageFrame
-                //pinch.minimumScale: 0.1
-                //pinch.maximumScale: 10
 
                 MouseArea {
                     id: dragArea
@@ -110,32 +119,9 @@ ApplicationWindow {
         width: 5
         radius: 2
         antialiasing: true
-        //height: flick.height * (flick.height / flick.contentHeight) - (width - anchors.margins) * 2
-        //y: flick.contentY * (flick.height / flick.contentHeight)
         NumberAnimation on opacity { id: vfade; to: 0; duration: 500 }
         onYChanged: { opacity = 1.0; scrollFadeTimer.restart() }
     }
-
-//    Rectangle {
-//        id: horizontalScroll
-//        anchors.margins: 2
-//        border.color: "black"
-//        border.width: 1
-//        height: 5
-//        radius: 2
-//        antialiasing: true
-//        width: flick.width * (flick.width / flick.contentWidth) - (height - anchors.margins) * 2
-//        x: flick.contentX * (flick.width / flick.contentWidth)
-//        NumberAnimation on opacity { id: hfade; to: 0; duration: 500 }
-//        onXChanged: { opacity = 1.0; scrollFadeTimer.restart() }
-//    }
-
-//    Timer {
-//        id: scrollFadeTimer
-//        interval: 1000
-//        onTriggered: { hfade.start(); vfade.start() }
-//    }
-
     Button {
         id: btn
         text: "Выберите папку..."
@@ -147,4 +133,5 @@ ApplicationWindow {
             fileDialog.open()
         }
     }
+    Component.onCompleted: { updateTime (); }
 }

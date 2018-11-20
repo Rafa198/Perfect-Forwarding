@@ -2,6 +2,9 @@
 
 imageInfo::imageInfo(QObject *parent) : QObject(parent)
 {
+  //fileSysWatcher = new QFileSystemWatcher(this);
+
+  //connect(fileSysWatcher, SIGNAL(directoryChanged(QString)), this, SLOT(upd(QString)));
 
 }
 
@@ -26,3 +29,29 @@ QString imageInfo::getFileLastRead(QString fileUrl)
   QFileInfo fi(myFilePath);
   return fi.lastRead().toString("dd.MM.yyyy");
 }
+
+unsigned int imageInfo::getCountFilesInDir(QString dirUrl)
+{
+  QString str = dirUrl;
+  auto filePath = QUrl(str).toLocalFile();
+  QDir dir(filePath);
+  return dir.count();
+}
+
+//bool imageInfo::upd(QString dirUrl, unsigned int countOld)
+//{
+//  unsigned int countNew = getCountFilesInDir(dirUrl);
+
+//  if( countOld == countNew) {
+//      return false;
+//    } else {
+//      countNew = countOld;
+//      return true;
+//    }
+//}
+
+//void imageInfo::upd(QString dirUrl)
+//{
+//  auto filePath = QUrl(dirUrl).toLocalFile();
+//  fileSysWatcher->addPath(filePath);
+//}
