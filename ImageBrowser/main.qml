@@ -98,14 +98,6 @@ ApplicationWindow {
                         image.scale -= 0.1 ;
                     }                
                 }
-
-                function setFrameColor() {
-                    if (currentFrame)
-                        currentFrame.border.color = "white";
-
-                    currentFrame = imageFrame;
-                    currentFrame.border.color = "black";                
-                }
             }
         }
     }
