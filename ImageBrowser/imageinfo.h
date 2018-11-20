@@ -2,32 +2,22 @@
 #define IMAGEINFO_H
 
 #include <QObject>
-#include <QFileInfo>
 #include <QString>
-#include <QDateTime>
-#include <QDebug>
-#include <QUrl>
-#include <QDir>
-#include <thread>
-//#include <QFileSystemWatcher>
 
-class imageInfo : public QObject
+class ImageInfo : public QObject
 {
   Q_OBJECT
 public:
-  explicit imageInfo(QObject *parent = nullptr);
-  //QFileSystemWatcher *fileSysWatcher;
+  explicit ImageInfo(QObject *parent = nullptr);
 
-  Q_INVOKABLE QString getFileName(QString fileUrl);
-  Q_INVOKABLE QString getFileLastModified(QString fileUrl);
-  Q_INVOKABLE QString getFileLastRead(QString fileUrl);
-  unsigned int getCountFilesInDir(QString dirUrl);
-  //Q_INVOKABLE bool upd(QString dirUrl, unsigned int countOld);
+  Q_INVOKABLE QString getFileName(const QString &fileUrl);
+  Q_INVOKABLE QString getFileLastModified(const QString &fileUrl);
+  Q_INVOKABLE QString getFileLastRead(const QString &fileUrl);
+  unsigned int getCountFilesInDir(const QString &dirUrl);
 
 signals:
 
 public slots:
-//void upd(QString dirUrl);
 
 private:
 
