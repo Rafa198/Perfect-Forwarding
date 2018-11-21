@@ -3,6 +3,7 @@ import QtQuick.Controls 2.2
 import QtQuick.Dialogs 1.2
 import Qt.labs.folderlistmodel 2.2
 import QtQuick.Controls.Material 2.3
+import QtQuick.Layouts 1.3
 
 ApplicationWindow {
     id: root
@@ -38,68 +39,79 @@ ApplicationWindow {
         anchors.margins: 10
         anchors.fill: parent
         model: folderModel
-        spacing: 25
+        spacing: 25      
+        delegate: RowLayout {
+                    Layout.fillHeight: true
+                    Layout.alignment: Qt.AlignLeft
+                    spacing: 10
 
-        delegate: Rectangle {
-            id: imageFrame
-            Material.background: Material.Dark
-            width: 150
-            height: 150
+                    Item {
+                        id: imageFrame
+                        Material.background: Material.Dark
+                        width: 150
+                        height: 150
 
-            Row {
-                anchors.left: parent.left
-                Image {
-                    id: image
-                    width: 150
-                    height: 150
-                    source: folderModel.folder + fileName
-                    asynchronous: true
-                }
+                        Image {
+                            id: image
+                            width: 150
+                            height: 150
+                            source: folderModel.folder + fileName
+                            asynchronous: true
+                        }
 
-                Column {
-                    Text {
-                        color: "white"
-                        text: " Name: " + imginfo.getFileName(folderModel.folder + fileName);
+                        PinchArea {
+                            anchors.fill: parent
+                            pinch.target: imageFrame
+
+                            MouseArea {
+                                id: dragArea
+                                hoverEnabled: true
+                                anchors.fill: parent
+                                scrollGestureEnabled: false
+
+                                onEntered: {
+                                    imageFrame.border.color = "black"
+                                    image.scale += 0.1
+                                }
+
+                                onExited: {
+                                    imageFrame.border.color = "white"
+                                    image.scale -= 0.1;
+                                }
+                            }
+                        }
                     }
 
-                    Text {
-                        color: "white"
-                        text: " Last edit: " + imginfo.getFileLastModified(folderModel.folder + fileName);
+                    Item {
+                        Layout.minimumHeight: 150
+
+                        ColumnLayout {
+                            spacing: 5
+
+                            Text {
+                                color: "white"
+                                text: " Name: " + imginfo.getFileName(folderModel.folder + fileName)
+                            }
+
+                            Text {
+                                color: "white"
+                                text: " Last edit: " + imginfo.getFileLastModified(folderModel.folder + fileName)
+                            }
+
+
+                            Text {
+                                color: "white"
+                                text: " Last open: " + imginfo.getFileLastRead(folderModel.folder + fileName)
+                            }
+
+                            Text {
+                                color: "white"
+                                text: " Size: " + fileSize + "Byte"
+                            }
+                        }
                     }
-
-                    Text {
-                        color: "white"
-                        text: " Last open: " + imginfo.getFileLastRead(folderModel.folder + fileName);
-                    }
-
-                    Text {
-                        color: "white"
-                        text: " Size: " + fileSize + "Byte";
-                    }
-                }
-            }
-
-            PinchArea {
-                anchors.fill: parent
-                pinch.target: imageFrame
-
-                MouseArea {
-                    id: dragArea
-                    hoverEnabled: true
-                    anchors.fill: parent
-                    scrollGestureEnabled: false
-
-                    onEntered: {
-                        imageFrame.border.color = "black"
-                        image.scale += 0.1
-                    }
-                    onExited: {
-                        imageFrame.border.color = "white"
-                        image.scale -= 0.1 ;
-                    }                
-                }
-            }
         }
+
     }
 
     Rectangle {
