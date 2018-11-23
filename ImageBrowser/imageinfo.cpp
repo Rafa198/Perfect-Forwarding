@@ -3,6 +3,7 @@
 #include <QDir>
 #include <QDateTime>
 #include <QFileInfo>
+#include <QDebug>
 
 ImageInfo::ImageInfo(QObject *parent) : QObject(parent)
 {
@@ -18,18 +19,20 @@ QString ImageInfo::getFileName(const QString &fileUrl)
 
 QString ImageInfo::getFileLastModified(const QString &fileUrl)
 {
-  QString str1 = fileUrl;
-  auto myFilePath = QUrl(str1).toLocalFile();
-  QFileInfo fi(myFilePath);
-  return fi.lastModified().toString("dd.MM.yyyy");;
+  QFileInfo fi(fileUrl);
+  return fi.lastModified().toString("dd.MM.yyyy");
 }
 
 QString ImageInfo::getFileLastRead(const QString &fileUrl)
 {
-  QString str1 = fileUrl;
-  auto myFilePath = QUrl(str1).toLocalFile();
-  QFileInfo fi(myFilePath);
+  QFileInfo fi(fileUrl);
   return fi.lastRead().toString("dd.MM.yyyy");
+}
+
+qint64 ImageInfo::getFileSize(const QString &fileUrl)
+{
+  QFileInfo fi(fileUrl);
+  return fi.size();
 }
 
 unsigned int ImageInfo::getCountFilesInDir(const QString &dirUrl)
@@ -38,4 +41,17 @@ unsigned int ImageInfo::getCountFilesInDir(const QString &dirUrl)
   auto filePath = QUrl(str).toLocalFile();
   QDir dir(filePath);
   return dir.count();
+}
+
+QFileInfoList ImageInfo::getFilesPaths(const QString &fileUrl)
+{
+  QStringList nameFilter;
+  nameFilter << "*.png" << "*.jpg";
+
+  auto filePath = QUrl(fileUrl).toLocalFile();
+  QDir dir(filePath);
+
+  QFileInfoList list = dir.entryInfoList( nameFilter, QDir::Files );
+
+  return list;
 }
