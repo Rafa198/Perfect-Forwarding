@@ -3,6 +3,8 @@ import QtQuick.Controls 2.2
 import QtQuick.Dialogs 1.2
 import Qt.labs.folderlistmodel 2.2
 import QtQuick.Controls.Material 2.3
+import QtQuick.Layouts 1.3
+import testmodel 1.0
 
 ApplicationWindow {
     id: root
@@ -13,92 +15,93 @@ ApplicationWindow {
     Material.theme: Material.Dark
 
     property var currentFrame: undefined
+    property string imageLocation: "";
 
     FileDialog {
         id: fileDialog
-        property string imageLocation: "";
         title: "Выберите папку с изображениями"
         selectFolder: true
-        folder: imageLocation        
+        folder: imageLocation
         onAccepted: {
-           folderModel.folder = fileUrl + "/"       
+            imageLocation = fileDialog.folder + "/"
+            tmod.add(imageLocation);
         }
-    }
-
-    FolderListModel {
-        id: folderModel
-        property var imageFilters : ["*.png", "*.jpg"];
-        objectName: "folderModel"
-        showDirs: false
-        nameFilters: imageFilters
     }
 
     ListView {
         id: view
         anchors.margins: 10
         anchors.fill: parent
-        model: folderModel
+        model: tmod
         spacing: 25
+        delegate: RowLayout {
+                    Layout.fillHeight: true
+                    Layout.alignment: Qt.AlignLeft
+                    spacing: 10
 
-        delegate: Rectangle {
-            id: imageFrame
-            Material.background: Material.Dark
-            width: 150
-            height: 150
+                    Item {
+                        id: imageFrame
+                        Material.background: Material.Dark
+                        width: 150
+                        height: 150
 
-            Row {
-                anchors.left: parent.left
-                Image {
-                    id: image
-                    width: 150
-                    height: 150
-                    source: folderModel.folder + fileName
-                    asynchronous: true
-                }
+                        Image {
+                            id: image
+                            width: 150
+                            height: 150
+                            source: "file:///" + fileUrl
+                            asynchronous: true
+                        }
 
-                Column {
-                    Text {
-                        color: "white"
-                        text: " Name: " + imginfo.getFileName(folderModel.folder + fileName);
+                        PinchArea {
+                            anchors.fill: parent
+                            pinch.target: imageFrame
+
+                            MouseArea {
+                                id: dragArea
+                                hoverEnabled: true
+                                anchors.fill: parent
+                                scrollGestureEnabled: false
+
+                                onEntered: {
+                                    image.scale += 0.1
+                                }
+
+                                onExited: {
+                                    image.scale -= 0.1;
+                                }
+                            }
+                        }
                     }
 
-                    Text {
-                        color: "white"
-                        text: " Last edit: " + imginfo.getFileLastModified(folderModel.folder + fileName);
+                    Item {
+                        Layout.minimumHeight: 150
+
+                        ColumnLayout {
+                            spacing: 5
+
+                            Text {
+                                color: "white"
+                                text: " Name: " + imginfo.getFileName(fileUrl)
+                            }
+
+                            Text {
+                                color: "white"
+                                text: " Last edit: " + lastEdit
+                            }
+
+
+                            Text {
+                                color: "white"
+                                text: " Last open: " + lastRead
+                            }
+
+                            Text {
+                                color: "white"
+                                text: " Size: " + fileSize + "Byte"
+                            }
+                        }                    
                     }
-
-                    Text {
-                        color: "white"
-                        text: " Last open: " + imginfo.getFileLastRead(folderModel.folder + fileName);
-                    }
-
-                    Text {
-                        color: "white"
-                        text: " Size: " + fileSize + "Byte";
-                    }
-                }
-            }
-
-            PinchArea {
-                anchors.fill: parent
-                pinch.target: imageFrame
-
-                MouseArea {
-                    id: dragArea
-                    hoverEnabled: true
-                    anchors.fill: parent
-                    scrollGestureEnabled: false
-
-                    onEntered: {
-                        imageFrame.border.color = "black"
-                        image.scale += 0.1
-                    }
-                    onExited: {
-                        imageFrame.border.color = "white"
-                        image.scale -= 0.1 ;
-                    }                
-                }
-            }
         }
     }
 
@@ -110,7 +113,7 @@ ApplicationWindow {
         border.width: 1
         width: 5
         radius: 2
-        antialiasing: true        
+        antialiasing: true
         NumberAnimation on opacity { id: vfade; to: 0; duration: 500 }
         onYChanged: { opacity = 1.0; scrollFadeTimer.restart() }
     }
@@ -124,6 +127,6 @@ ApplicationWindow {
 
         onClicked: {
             fileDialog.open()
-        }    
+        }
     }
 }

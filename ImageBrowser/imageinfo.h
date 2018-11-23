@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QString>
+#include <QDir>
 
 class ImageInfo : public QObject
 {
@@ -13,13 +14,9 @@ public:
   Q_INVOKABLE QString getFileName(const QString &fileUrl);
   Q_INVOKABLE QString getFileLastModified(const QString &fileUrl);
   Q_INVOKABLE QString getFileLastRead(const QString &fileUrl);
+  Q_INVOKABLE qint64 getFileSize(const QString &fileUrl);
   unsigned int getCountFilesInDir(const QString &dirUrl);
-
-signals:
-
-public slots:
-
-private:
+  QFileInfoList getFilesPaths(const QString &fileUrl);
 
 };
 
