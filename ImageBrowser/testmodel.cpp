@@ -1,35 +1,40 @@
 #include "testmodel.h"
-#include <QDebug>
+
 #include <QUrl>
 #include <QDateTime>
+
 #include <thread>
 #include <functional>
 
-TestModel::TestModel(QObject *parent):
-    QAbstractListModel(parent)
+TestModel::TestModel(QObject *parent)
+: QAbstractListModel(parent)
 {
   qRegisterMetaType<QFileInfo>("QFileInfo");
+
   QObject::connect(this,SIGNAL(changed(QFileInfo)),this, SLOT(insertInList(QFileInfo)),Qt::QueuedConnection);
 }
 
 int TestModel::rowCount(const QModelIndex &parent) const
 {
-  if(parent.isValid()) {
+  if(parent.isValid()) 
+  {
       return 0;
-    }
+  }
 
   return m_data.size();
 }
 
 QVariant TestModel::data(const QModelIndex &index, int role) const
 {
-  if(!index.isValid()){
+  if(!index.isValid())
+  {
       return QVariant();
-    }
+  }
 
   const ModelData& data = m_data[index.row()];
 
-  switch (role) {
+  switch (role) 
+  {
     case TestModel::Roles::FileNameRole:
       return data.fileName;
     case TestModel::Roles::LastModifiedRole:
@@ -42,25 +47,24 @@ QVariant TestModel::data(const QModelIndex &index, int role) const
       return data.size;
     default:
         return QVariant();
-    }
+  }
 }
 
 QHash<int, QByteArray> TestModel::roleNames() const
 {
   QHash<int, QByteArray> roles = QAbstractListModel::roleNames();
 
-  roles[FileNameRole] = "fileName";
+  roles[FileNameRole] =     "fileName";
   roles[LastModifiedRole] = "lastEdit";
-  roles[FileUrlRole] = "fileUrl";
-  roles[SizeRole] = "fileSize";
-  roles[LastReadRole] = "lastRead";
+  roles[FileUrlRole] =      "fileUrl";
+  roles[SizeRole] =         "fileSize";
+  roles[LastReadRole] =     "lastRead";
 
   return roles;
 }
 
 void TestModel::insertInList(QFileInfo fileUrl)
 {
-  beginInsertRows(QModelIndex(), m_data.size(), m_data.size());
 
   ModelData data;
 
@@ -69,23 +73,26 @@ void TestModel::insertInList(QFileInfo fileUrl)
   data.fileName     = fileUrl.fileName();
   data.size         = fileUrl.size();
   data.fileUrl      = fileUrl.filePath();
-
+  
+  beginInsertRows(QModelIndex(), m_data.size(), m_data.size());
   m_data.push_back(data);
-
   endInsertRows();
+
   emit dataChanged();
 }
 
 void TestModel::add(const QString &fileUrl)
 {
-  auto x = [this](const QString &fileUrl) {
+  auto func = [this](const QString &fileUrl) 
+  {
     QFileInfoList filePaths = imgInfo.getFilesPaths(fileUrl);
 
-    for(int i = 0; i < filePaths.count(); i++) {
+    for(int i = 0; i < filePaths.count(); i++) 
+    {
         changed(filePaths[i]);
-      }
+    }
   };
 
-  std::thread th(x,fileUrl);
+  std::thread th(func,fileUrl);
   th.join();
 }

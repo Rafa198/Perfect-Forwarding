@@ -1,9 +1,11 @@
 #include <QGuiApplication>
+
 #include <QQmlApplicationEngine>
 #include <QQmlEngine>
 #include <QQmlContext>
-#include "imageinfo.h"
-#include "testmodel.h"
+
+#include <imageinfo.h>
+#include <testmodel.h>
 
 int main(int argc, char *argv[])
 {

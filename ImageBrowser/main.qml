@@ -9,22 +9,20 @@ import testmodel 1.0
 ApplicationWindow {
     id: root
     visible: true
+    
     width: 1024
     height: 600
     title: "Images"
     Material.theme: Material.Dark
 
-    property var currentFrame: undefined
-    property string imageLocation: "";
 
     FileDialog {
         id: fileDialog
         title: "Выберите папку с изображениями"
         selectFolder: true
-        folder: imageLocation
+        folder: fileDialog.folder
         onAccepted: {
-            imageLocation = fileDialog.folder + "/"
-            tmod.add(imageLocation);
+            tmod.add(fileDialog.folder);
         }
     }
 
