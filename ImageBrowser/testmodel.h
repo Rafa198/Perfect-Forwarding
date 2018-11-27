@@ -4,7 +4,7 @@
 #include <QObject>
 #include <QAbstractListModel>
 #include <QList>
-#include "imageinfo.h"
+#include <imageinfo.h>
 
 class TestModel : public QAbstractListModel
 {
@@ -12,7 +12,8 @@ class TestModel : public QAbstractListModel
 
 public:
 
-  enum Roles {
+  enum Roles 
+  {
     FileNameRole = Qt::UserRole + 1,
     FileUrlRole,
     LastModifiedRole,
@@ -32,11 +33,12 @@ signals:
     void changed(QFileInfo);
 
 public slots:
-    void insertInList(QFileInfo fileUrl);
+    void insertInList(QFileInfo fileUrl) const;
 
 private:
 
-    struct ModelData {
+  struct ModelData 
+  {
     QString fileName;
     QString fileUrl;
     QString LastModified;
