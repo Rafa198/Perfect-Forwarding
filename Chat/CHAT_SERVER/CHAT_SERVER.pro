@@ -5,12 +5,12 @@ CONFIG -= qt
 
 SOURCES += \
         main.cpp \
-    chatserver.cpp \
-    chatsession.cpp \
-    chatroom.cpp \
-    chatparticipant.cpp \
-    chatmessage.cpp
+    server.cpp \
+    con_handler.cpp
 
+HEADERS += \
+    server.h \
+    con_handler.h
 
 win32:LIBS += -lsetupapi
 win32:LIBS += -lwsock32
@@ -56,10 +56,3 @@ win32: LIBS += -L$$PWD/../../boost/boost_mingw/lib/ -lboost_chrono-mgw49-mt-d-x3
 
 INCLUDEPATH += $$PWD/../../boost/boost_mingw/include/boost-1_68
 DEPENDPATH += $$PWD/../../boost/boost_mingw/include/boost-1_68
-
-HEADERS += \
-    chatserver.h \
-    chatsession.h \
-    chatroom.h \
-    chatparticipant.h \
-    chatmessage.h
