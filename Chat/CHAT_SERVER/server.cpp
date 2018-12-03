@@ -2,9 +2,10 @@
 
 void Server::handle_accept(con_handler::pointer connection, const boost::system::error_code& err)
 {
-  if (!err) {
-    connection->start();
-  }
+  if (!err)
+    {
+      connection->start();
+    }
   start_accept();
 }
 void Server::start_accept()

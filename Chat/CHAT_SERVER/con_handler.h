@@ -1,5 +1,6 @@
 #ifndef CON_HANDLER_H
 #define CON_HANDLER_H
+
 #include <iostream>
 
 #include <boost/asio.hpp>
@@ -9,8 +10,6 @@
 using namespace boost::asio;
 using ip::tcp;
 
-using std::cout;
-using std::endl;
 
 class con_handler : public boost::enable_shared_from_this<con_handler>
 {
@@ -18,7 +17,6 @@ public:
   typedef boost::shared_ptr<con_handler> pointer;
 
   con_handler(boost::asio::io_service& io_service);
-
 
   void start();
   void handle_read(const boost::system::error_code& err, size_t bytes_transferred);

@@ -23,23 +23,26 @@ void con_handler::start()
 
 void con_handler::handle_read(const boost::system::error_code& err, size_t bytes_transferred)
 {
-  if (!err) {
-       cout << data << endl;
-  } else {
-       std::cerr << "ERROR: " << err.message() << std::endl;
-       sock.close();
-  }
+  if (!err)
+    {
+      std::cout << data << std::endl;
+    }
+  else
+    {
+      std::cerr << "ERROR: " << err.message() << std::endl;
+      sock.close();
+    }
 }
 
 void con_handler::handle_write(const boost::system::error_code& err, size_t bytes_transferred)
 {
   if (!err)
     {
-     cout << "Server sent Hello message!" << endl;
+     std::cout << "Server sent Hello message!" << std::endl;
     }
   else
     {
-     std::cerr << "ERROR: " << err.message() << endl;
+     std::cerr << "ERROR: " << err.message() << std::endl;
      sock.close();
     }
 }
