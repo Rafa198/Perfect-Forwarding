@@ -16,26 +16,26 @@ class con_handler : public boost::enable_shared_from_this<con_handler>
 public:
   typedef boost::shared_ptr<con_handler> pointer;
 
-  con_handler(boost::asio::io_service& io_service);
+  con_handler(boost::asio::io_service &io_service);
 
   void start();
-  void handle_read(const boost::system::error_code& err, size_t bytes_transferred);
-  void handle_write(const boost::system::error_code& err, size_t bytes_transferred);
+  void handle_read(const boost::system::error_code &err, size_t bytes_transferred);
+  void handle_write(const boost::system::error_code &err, size_t bytes_transferred);
 
 // creating the pointer
-  static pointer create(boost::asio::io_service& io_service)
+  static pointer create(boost::asio::io_service &io_service)
   {
     return pointer(new con_handler(io_service));
   }
 // socket creation
-  tcp::socket& socket()
+  tcp::socket &socket()
   {
     return sock;
   }
 
 private:
   tcp::socket sock;
-  std::string message = "Hello From Server!";
+  std::string message = "123123123123";
   enum { max_length = 1024 };
   char data[max_length];
 

@@ -1,6 +1,6 @@
 #include "server.h"
 
-using namespace std;
+
 
 int main()
 {
@@ -10,9 +10,9 @@ int main()
     Server server(io_service);
     io_service.run();    
   }
-  catch(std::exception& e)    
+  catch(std::exception &e)
   {
-    std::cerr << e.what() << endl;
+    std::cerr << e.what() << std::endl;
   }
 
   return 0;

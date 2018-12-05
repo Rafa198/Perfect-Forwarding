@@ -1,6 +1,6 @@
 #include "server.h"
 
-void Server::handle_accept(con_handler::pointer connection, const boost::system::error_code& err)
+void Server::handle_accept(con_handler::pointer connection, const boost::system::error_code &err)
 {
   if (!err)
     {

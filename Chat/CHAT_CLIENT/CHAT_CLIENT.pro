@@ -13,7 +13,8 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-        main.cpp
+        main.cpp \
+    client.cpp
 
 RESOURCES += qml.qrc
 
@@ -28,4 +29,51 @@ qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
-HEADERS +=
+
+win32:LIBS += -lsetupapi
+win32:LIBS += -lwsock32
+win32:LIBS += -lws2_32
+win32:DEFINES += _WIN32_WINNT=0x0501
+
+win32: LIBS += -L$$PWD/../../boost/boost_mingw/lib/ -llibboost_filesystem-mgw49-mt-d-x32-1_68.dll
+
+INCLUDEPATH += $$PWD/../../boost/boost_mingw/include/boost-1_68
+DEPENDPATH += $$PWD/../../boost/boost_mingw/include/boost-1_68
+
+win32: LIBS += -L$$PWD/../../boost/boost_mingw/lib/ -lboost_system-mgw49-mt-d-x32-1_68
+
+INCLUDEPATH += $$PWD/../../boost/boost_mingw/include/boost-1_68
+DEPENDPATH += $$PWD/../../boost/boost_mingw/include/boost-1_68
+
+unix|win32: LIBS += -L$$PWD/../../boost/boost_mingw/lib/ -llibboost_system-mgw49-mt-d-x32-1_68.dll
+
+INCLUDEPATH += $$PWD/../../boost/boost_mingw/include/boost-1_68
+DEPENDPATH += $$PWD/../../boost/boost_mingw/include/boost-1_68
+
+win32: LIBS += -L$$PWD/../../boost/boost_mingw/lib/ -llibboost_thread-mgw49-mt-d-x32-1_68.dll
+
+INCLUDEPATH += $$PWD/../../boost/boost_mingw/include/boost-1_68
+DEPENDPATH += $$PWD/../../boost/boost_mingw/include/boost-1_68
+
+win32: LIBS += -L$$PWD/../../boost/boost_mingw/lib/ -llibboost_serialization-mgw49-mt-d-x32-1_68.dll
+
+INCLUDEPATH += $$PWD/../../boost/boost_mingw/include/boost-1_68
+DEPENDPATH += $$PWD/../../boost/boost_mingw/include/boost-1_68
+
+win32: LIBS += -L$$PWD/../../boost/boost_mingw/lib/ -llibboost_context-mgw49-mt-d-x32-1_68.dll
+
+INCLUDEPATH += $$PWD/../../boost/boost_mingw/include/boost-1_68
+DEPENDPATH += $$PWD/../../boost/boost_mingw/include/boost-1_68
+
+win32: LIBS += -L$$PWD/../../boost/boost_mingw/lib/ -llibboost_program_options-mgw49-mt-d-x32-1_68.dll
+
+INCLUDEPATH += $$PWD/../../boost/boost_mingw/include/boost-1_68
+DEPENDPATH += $$PWD/../../boost/boost_mingw/include/boost-1_68
+
+win32: LIBS += -L$$PWD/../../boost/boost_mingw/lib/ -lboost_chrono-mgw49-mt-d-x32-1_68
+
+INCLUDEPATH += $$PWD/../../boost/boost_mingw/include/boost-1_68
+DEPENDPATH += $$PWD/../../boost/boost_mingw/include/boost-1_68
+
+HEADERS += \
+    client.h
