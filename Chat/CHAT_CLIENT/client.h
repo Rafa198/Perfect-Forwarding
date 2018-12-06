@@ -6,6 +6,7 @@
 #include <boost/asio.hpp>
 
 #include <string>
+#include <list>
 
 using namespace boost::asio;
 using ip::tcp;
@@ -22,9 +23,9 @@ public:
 
 private:
   boost::asio::io_service service;
-  //std::string msg = "-FROM CLIENT!\n";
   boost::system::error_code error;
   boost::asio::streambuf receive_buffer;
+  std::list<std::string> messages;
 };
 
 #endif // CLIENT_H

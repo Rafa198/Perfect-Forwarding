@@ -76,10 +76,15 @@ ApplicationWindow {
                     if(event.key === 16777220)
                     {
                         //console.log("TEXT0000000")
-
-
-
-                        cl.client_run(txtInput.text.toString())
+                        if(txtInput.length != 0)
+                        {
+                        cl.client_run(txtInput.text)
+                        txtInput.clear()
+                        }
+                        else
+                        {
+                            console.log("empty text input!!!")
+                        }
 
                     }
                 }
@@ -108,7 +113,15 @@ ApplicationWindow {
                 height: 40
 
                 onClicked: {
-
+                    if(txtInput.length != 0)
+                    {
+                    cl.client_run(txtInput.text)
+                    txtInput.clear()
+                    }
+                    else
+                    {
+                        console.log("empty text input!!!")
+                    }
 
                 }
             }

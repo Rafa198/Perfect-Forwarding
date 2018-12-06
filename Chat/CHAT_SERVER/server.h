@@ -9,7 +9,6 @@
 class Server
 {
 public:
-//constructor for accepting connection from client
   Server(boost::asio::io_service &io_service)
     : acceptor_(io_service, tcp::endpoint(tcp::v4(), 1234))
   {

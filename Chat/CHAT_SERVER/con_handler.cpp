@@ -1,5 +1,6 @@
 #include "con_handler.h"
 
+#include <boost/bind.hpp>
 
 con_handler::con_handler(io_service &io_service)
   : sock(io_service)
@@ -14,13 +15,6 @@ void con_handler::start()
                        shared_from_this(),
                        boost::asio::placeholders::error,
                        boost::asio::placeholders::bytes_transferred));
-
-//  sock.async_write_some(boost::asio::buffer(message, max_length),
-//                        boost::bind(&con_handler::handle_write,
-//                        shared_from_this(),
-//                        boost::asio::placeholders::error,
-//                        boost::asio::placeholders::bytes_transferred));
-  sock.send(boost::asio::buffer(data, max_length));
 }
 
 void con_handler::handle_read(const boost::system::error_code &err, size_t bytes_transferred)
@@ -28,6 +22,12 @@ void con_handler::handle_read(const boost::system::error_code &err, size_t bytes
   if (!err)
     {
       std::cout << "CHAR DATA: " << data << std::endl;
+      message = data;
+      sock.async_write_some(boost::asio::buffer(message, max_length),
+                            boost::bind(&con_handler::handle_write,
+                            shared_from_this(),
+                            boost::asio::placeholders::error,
+                            boost::asio::placeholders::bytes_transferred));
     }
   else
     {
