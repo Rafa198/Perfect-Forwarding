@@ -12,7 +12,6 @@ ApplicationWindow {
     height: 480
     title: "CHAT APPLICATION"
 
-
     RowLayout {
         id: layout
         anchors.left: parent.left
@@ -26,15 +25,14 @@ ApplicationWindow {
             Layout.preferredWidth: parent.width / 3
             Layout.maximumWidth: parent.width
             Layout.minimumHeight: parent.height
-            Material.background: Material.Orange
+            Material.background: Material.Grey
 
             Text {
                 anchors.centerIn: parent
                 text: parent.width + 'x' + parent.height
             }
         }
-
-}
+    }
 
     ColumnLayout {
         id: columnLayout
@@ -44,87 +42,146 @@ ApplicationWindow {
         spacing: 5
 
         Item {
+            id: mainItem
             Layout.fillWidth: true
             Layout.preferredWidth: parent.width - (parent.width / 3)
             Layout.preferredHeight: parent.height
-            Material.background: Material.Green
+            Material.background: Material.Grey
 
-            Text {
-                anchors.centerIn: parent
-                text: parent.width + 'x' + parent.height
-            }
+//            Text {
+//                anchors.centerIn: parent
+//                text: parent.width + 'x' + parent.height
+//            }
 
-            TextInput {
-                id: txtInput
-                text: "Введите текст..."
-                anchors.right: sendButton.left
-                anchors.left: parent.left
-                anchors.bottom: parent.bottom
-                selectByMouse: true
-                selectionColor: "green"
-                font.pixelSize: 14
-                color: "white"
-                height: 40
-                width: (3 / 4) * parent.width
-
-                //horizontalAlignment: Text.AlignHCenter
-                verticalAlignment: Text.AlignVCenter
-
-
-                Keys.onPressed: {
-
-                    if(event.key === 16777220)
-                    {
-                        //console.log("TEXT0000000")
-                        if(txtInput.length != 0)
-                        {
-                        cl.client_run(txtInput.text)
-                        txtInput.clear()
-                        }
-                        else
-                        {
-                            console.log("empty text input!!!")
-                        }
-
-                    }
-                }
-
-//                MouseArea{
-//                    id: marea
-//                    visible: false
-//                    anchors.fill: txtInput
-
-//                    onClicked: {
-//                        txtInput.clear()
-//                    }
-
-//                }
-            }
-
-            Button {
-                id: sendButton
-                visible: true
-                text: "Отправить"
-                Material.background: Material.Teal
-                highlighted: true
+            Item {
+                id: messageRec
                 anchors.right: parent.right
-                anchors.bottom: parent.bottom
-                width: parent.width / 4
-                height: 40
+                anchors.bottom: pane.top
+                anchors.left: parent.left
+                anchors.top: parent.top
+                //color: "red"
 
-                onClicked: {
-                    if(txtInput.length != 0)
-                    {
-                    cl.client_run(txtInput.text)
-                    txtInput.clear()
+                ListModel {
+                    id: textModel
+                    ListElement {
+                        msg: "cl.getMsg(1)"
                     }
-                    else
-                    {
-                        console.log("empty text input!!!")
-                    }
+                }
 
+                ColumnLayout {
+                    anchors.fill: parent
+
+                ListView {
+                    id: viewM
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+                    Layout.margins: pane.leftPadding + messageField.leftPadding
+                    displayMarginBeginning: 40
+                    displayMarginEnd: 40
+                    verticalLayoutDirection: ListView.BottomToTop
+                    spacing: 12
+                    model: textModel
+                    delegate: RowLayout {
+                     Layout.maximumWidth: parent.height / 2
+                     spacing: 5
+
+                     Item {
+                         id: msgItem
+                         width: 200
+                         height: 50
+
+                         Text {
+                             color: "white"
+                             text: "message " + msg
+                         }
+                     }
+                    }
+                    ScrollBar.vertical: ScrollBar {}
+                }
                 }
             }
+
+            Pane {
+                id: pane
+                anchors.bottom: mainItem.bottom
+                width: mainItem.width
+                Layout.fillWidth: true
+                background: Material.Grey
+
+                RowLayout {
+                    width: mainItem.width
+
+                    TextArea {
+                        id: messageField                        
+                        Layout.fillWidth: true
+                        placeholderText: "Compose message"
+                        wrapMode: TextArea.Wrap
+                    }
+
+                    Button {
+                        id: sendButton
+                        visible: true
+                        text: "Отправить"
+                        Material.background: Material.BlueGrey
+                        highlighted: true
+                        anchors.right: parent.right
+                        anchors.bottom: parent.bottom
+                        width: parent.width / 4
+                        height: 40
+                        enabled: messageField.length > 0
+
+                        onClicked: {
+                            if(messageField.length != 0) {
+                            cl.client_run(messageField.text, "USER")
+                            messageField.clear()
+                            }
+                            else {
+                                console.log("empty text input!!!")
+                            }
+                        }
+                    }
+                }
+            }
+
+//            TextInput {
+//                id: txtInput
+//                text: "Введите текст..."
+//                anchors.right: sendButton.left
+//                anchors.left: parent.left
+//                anchors.bottom: parent.bottom
+//                selectByMouse: true
+//                selectionColor: "green"
+//                font.pixelSize: 14
+//                color: "white"
+//                height: 40
+//                width: (3 / 4) * parent.width
+//                //horizontalAlignment: Text.AlignHCenter
+//                verticalAlignment: Text.AlignVCenter
+////                Keys.onPressed: {
+////                    if(event.key === 16777220) {
+////                        if(txtInput.length != 0) {
+////                        cl.client_run(txtInput.text)
+////                        txtInput.clear()
+////                        }
+////                        else {
+////                            console.log("empty textInput!!!")
+////                        }
+////                    }
+//                }
+
+////                MouseArea{
+////                    id: marea
+////                    visible: false
+////                    anchors.fill: txtInput
+
+////                    onClicked: {
+////                        txtInput.clear()
+////                    }
+
+////                }
+//           }
+
+
         }
     }
 }

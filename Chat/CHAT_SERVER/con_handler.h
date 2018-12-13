@@ -6,6 +6,8 @@
 #include <boost/asio.hpp>
 #include <boost/enable_shared_from_this.hpp>
 
+#include <message.h>
+
 using namespace boost::asio;
 using ip::tcp;
 
@@ -33,8 +35,10 @@ public:
 private:
   tcp::socket sock;
   std::string message;
-  enum { max_length = 1024 };
-  char data[max_length];
+  //enum { max_length = 1024 };
+  //char data[max_length];
+  Message data;
+  MessageStr dataStr;
 
 };
 #endif // CON_HANDLER_H

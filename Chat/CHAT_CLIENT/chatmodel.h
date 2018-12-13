@@ -31,7 +31,6 @@ public slots:
 
 
 private:
-
     struct ModelData {
     std::string userName;
     std::string message;

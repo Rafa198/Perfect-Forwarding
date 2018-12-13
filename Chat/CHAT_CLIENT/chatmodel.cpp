@@ -1,9 +1,11 @@
 #include "chatmodel.h"
 
+#include <message.h>
+
 ChatModel::ChatModel(QObject *parent) :
   QAbstractListModel(parent)
 {
-
+  //ChatMessage Cl1("Rafael", "Hello");
 }
 
 int ChatModel::rowCount(const QModelIndex &parent) const

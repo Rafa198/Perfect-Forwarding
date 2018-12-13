@@ -6,7 +6,6 @@ void Server::handle_accept(con_handler::pointer connection, const boost::system:
     {
       connection->start();
     }
-
   start_accept();
 }
 

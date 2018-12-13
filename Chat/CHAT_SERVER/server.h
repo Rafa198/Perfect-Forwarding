@@ -5,7 +5,6 @@
 
 #include "con_handler.h"
 
-
 class Server
 {
 public:

@@ -2,33 +2,100 @@
 
 #include <QDebug>
 
-void Client::client_run(QString msg)
+#include <boost/bind.hpp>
+
+
+void Client::write(const ChatMessage &msg)
 {
-  tcp::socket socket(service);
-  socket.connect(tcp::endpoint(boost::asio::ip::address::from_string("127.0.0.1"), 1234));
-  boost::asio::write(socket, boost::asio::buffer(msg.toStdString()), error);
-
-  if(!error)
+  post(service_,
+                    [this, msg]()
   {
-    qDebug() << "Client sent message!!" << endl;
-  }
-  else
-  {
-     qDebug() << "SEND FAILED!!!" << endl; // << error.message() << std::endl;
-  }
+      bool writeInProgress = !writeMsg_.empty();
+      writeMsg_.push_back(msg);
+      if(!writeInProgress)
+        {
+          doWrite();
+        }
+  });
 
- boost::asio::read(socket, receive_buffer, boost::asio::transfer_all(), error);
+}
 
- if(error && error != boost::asio::error::eof)
- {
-     qDebug() << "RECEIVE FAILED!!! \n"; // << error.message() << std::endl;
- }
- else
- {
-     const char* data = boost::asio::buffer_cast<const char*>(receive_buffer.data());
-     std::string str = data;
-     messages.push_back(str);
-     qDebug() << "RECEIVE DATA: " << data << endl;
+void Client::close()
+{
+  post(service_, [this]()
+                              {
+                                socket_.close();
+                              });
+}
 
- }
+void Client::doConnect(const tcp::resolver::results_type& endpoints)
+{
+  async_connect(socket_, endpoints,
+          [this](boost::system::error_code ec, tcp::endpoint)
+          {
+            if (!ec)
+            {
+              doReadHeader();
+            }
+          });
+}
+
+void Client::doReadHeader()
+{
+  async_read(socket_,
+          buffer(readMsg_.getData(), ChatMessage::header_length),
+          [this](boost::system::error_code ec, std::size_t /*length*/)
+          {
+            if (!ec /*&& readMsg_.decode_header()*/)
+            {
+              doReadBody();
+            }
+            else
+            {
+              socket_.close();
+            }
+          });
+}
+
+void Client::doReadBody()
+{
+  async_read(socket_,
+          buffer(/*readmsg_.body()*/readMsg_.getData() + ChatMessage::header_length,
+                              ChatMessage::max_body_length),
+          [this](boost::system::error_code ec, std::size_t /*length*/)
+          {
+            if (!ec)
+            {
+              //std::cout.write(readMsg_.body(), readMsg_.body_length());
+              //std::cout << "\n";
+              // QDEBUG
+              doReadHeader();
+            }
+            else
+            {
+              socket_.close();
+            }
+          });
+}
+
+void Client::doWrite()
+{
+  async_write(socket_,
+         buffer(writeMsg_.front().getData(),
+           writeMsg_.front().getAllSize()),
+         [this](boost::system::error_code ec, std::size_t /*length*/)
+         {
+           if (!ec)
+           {
+             writeMsg_.pop_front();
+             if (!writeMsg_.empty())
+             {
+               doWrite();
+             }
+           }
+           else
+           {
+             socket_.close();
+           }
+         });
 }
