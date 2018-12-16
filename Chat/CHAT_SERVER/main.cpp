@@ -1,12 +1,17 @@
 #include "server.h"
 
+#include <iostream>
+
 int main()
 {
-  try    
+  try
   {
-    boost::asio::io_service io_service;
-    Server server(io_service);
-    io_service.run();    
+    std::cout << "Starting..." << std::endl;
+    boost::asio::io_context iocon;
+    tcp::endpoint endpoint(tcp::v4(), 1234);
+    chat_server server(iocon, endpoint);
+    iocon.run();
+    std::cout << " SUCCESS\n" << std::endl;
   }
   catch(std::exception &e)
   {
