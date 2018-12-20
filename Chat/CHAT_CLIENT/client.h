@@ -8,7 +8,6 @@
 #include <boost/enable_shared_from_this.hpp>
 
 #include <string>
-#include <list>
 #include <queue>
 
 #include <chatmodel.h>
@@ -16,6 +15,7 @@
 
 using namespace boost::asio;
 using ip::tcp;
+
 typedef std::deque<ChatMessage> chatMessageQueue;
 
 class Client : public QObject, public boost::enable_shared_from_this<Client>
@@ -27,15 +27,16 @@ public:
        socket_(service)
   {
     doConnect(endpoints);
-  //socket_->connect(tcp::endpoint(boost::asio::ip::address::from_string("127.0.0.1"), 1234));
+    //socket_->connect(tcp::endpoint(boost::asio::ip::address::from_string("127.0.0.1"), 1234));
   }
 
-  Q_INVOKABLE void client_run();
+  Q_INVOKABLE void send1(QString user, QString mes);
+
   void write(const ChatMessage &msg);
   void close();
 
 private:
-  io_service &service_;
+  io_service& service_;
   boost::system::error_code error_;
   ChatMessage readMsg_;
   chatMessageQueue writeMsg_;

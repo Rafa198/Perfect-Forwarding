@@ -5,6 +5,9 @@
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/asio.hpp>
 
+#include <deque>
+#include <set>
+
 #include <message.h>
 
 using boost::asio::ip::tcp;

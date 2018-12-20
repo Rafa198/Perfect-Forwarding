@@ -2,20 +2,38 @@
 
 #include <QDebug>
 
-#include <boost/bind.hpp>
+void Client::send1(QString user, QString mes)
+{
 
+  qDebug() << "CLIENT: " << user << ": " << mes << endl;
+  ChatMessage m;
+  m.setUserName(user.toStdString());
+  m.setMessage(mes.toStdString());
+  m.allocate();
+  m.fillBuffer();
+  qDebug() << "MES SIZE: " <<  m.getMessageSize() << " Name SIZE: " << m.getUserNameSize() << endl;
+  write(m);
+
+}
 
 void Client::write(const ChatMessage &msg)
 {
-  post(service_,
-                    [this, msg]()
+  qDebug() << "CLIENT | WRITE!" << endl;
+  boost::asio::post(service_, [this, msg]()
   {
+      qDebug() << "CLIENT | ---POST!" << endl;
       bool writeInProgress = !writeMsg_.empty();
       writeMsg_.push_back(msg);
       if(!writeInProgress)
         {
-          doWrite();
+          qDebug() << "CLIENT |--- DO WRITE!" << endl;
+          doWrite();          
         }
+      else
+        {
+         readMsg_.deallocate();
+        }
+
   });
 
 }
@@ -23,31 +41,33 @@ void Client::write(const ChatMessage &msg)
 void Client::close()
 {
   post(service_, [this]()
-                              {
-                                socket_.close();
-                              });
+  {
+    qDebug() << "CLIENT | CLOSE" << endl;
+    socket_.close();
+  });
 }
 
 void Client::doConnect(const tcp::resolver::results_type& endpoints)
 {
-  async_connect(socket_, endpoints,
-          [this](boost::system::error_code ec, tcp::endpoint)
-          {
-            if (!ec)
-            {
-              doReadHeader();
-            }
-          });
+  async_connect(socket_, endpoints, [this](boost::system::error_code ec, tcp::endpoint)
+  {
+    if (!ec)
+      {
+        qDebug() << "CLIENT| doConnect";
+        doReadHeader();
+      }
+  });
 }
 
 void Client::doReadHeader()
 {
-  async_read(socket_,
-          buffer(readMsg_.getData(), ChatMessage::header_length),
+  async_read(socket_, buffer(readMsg_.getMessageInfo(), sizeof(ChatMessage::msgInfo)),
           [this](boost::system::error_code ec, std::size_t /*length*/)
           {
-            if (!ec /*&& readMsg_.decode_header()*/)
+            if (!ec)
             {
+                qDebug() << "CLIENT| doReadHeader";
+                readMsg_.allocate();
               doReadBody();
             }
             else
@@ -59,30 +79,33 @@ void Client::doReadHeader()
 
 void Client::doReadBody()
 {
-  async_read(socket_,
-          buffer(/*readmsg_.body()*/readMsg_.getData() + ChatMessage::header_length,
-                              ChatMessage::max_body_length),
+  async_read(socket_, buffer(readMsg_.getData(), readMsg_.getAllSize()),
           [this](boost::system::error_code ec, std::size_t /*length*/)
           {
             if (!ec)
             {
+              readMsg_.parseBuffer();
+              qDebug() << "CLIENT| doReadBody";
               //std::cout.write(readMsg_.body(), readMsg_.body_length());
               //std::cout << "\n";
-              // QDEBUG
+              qDebug() << "UserName " + QString::fromStdString(readMsg_.getUserName()) << endl
+                       << "UserNameSize " + QString(readMsg_.getUserNameSize()) << endl
+                       << "Message " + QString::fromStdString(readMsg_.getMessage()) << endl
+                       << "Message Size " + QString(readMsg_.getMessageSize()) << endl;
               doReadHeader();
             }
             else
             {
               socket_.close();
             }
+            readMsg_.deallocate();
           });
 }
 
 void Client::doWrite()
 {
-  async_write(socket_,
-         buffer(writeMsg_.front().getData(),
-           writeMsg_.front().getAllSize()),
+  qDebug() << "CLIENT| doWrite" << endl;
+  async_write(socket_, buffer(writeMsg_.front().getData(), writeMsg_.front().getAllSize()),
          [this](boost::system::error_code ec, std::size_t /*length*/)
          {
            if (!ec)
@@ -97,5 +120,7 @@ void Client::doWrite()
            {
              socket_.close();
            }
+           readMsg_.deallocate();
          });
+
 }

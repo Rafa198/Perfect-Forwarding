@@ -5,12 +5,10 @@ CONFIG -= qt
 
 SOURCES += \
         main.cpp \
-    server.cpp \
-    con_handler.cpp
+    server.cpp
 
 HEADERS += \
     server.h \
-    con_handler.h \
     ../message.h
 
 win32:LIBS += -lsetupapi
@@ -19,14 +17,24 @@ win32:LIBS += -lws2_32
 win32:DEFINES += _WIN32_WINNT=0x0501
 
 
-INCLUDEPATH += $$PWD/../../../boost/boost_mingw/include/boost-1_68
-DEPENDPATH += $$PWD/../../../boost/boost_mingw/include/boost-1_68
-win32: LIBS += -L$$PWD/../../../boost/boost_mingw/lib/ -llibboost_filesystem-mgw49-mt-d-x32-1_68.dll
-win32: LIBS += -L$$PWD/../../../boost/boost_mingw/lib/ -lboost_system-mgw49-mt-d-x32-1_68
-win32: LIBS += -L$$PWD/../../../boost/boost_mingw/lib/ -llibboost_thread-mgw49-mt-d-x32-1_68.dll
-win32: LIBS += -L$$PWD/../../../boost/boost_mingw/lib/ -llibboost_serialization-mgw49-mt-d-x32-1_68.dll
-win32: LIBS += -L$$PWD/../../../boost/boost_mingw/lib/ -llibboost_context-mgw49-mt-d-x32-1_68.dll
-win32: LIBS += -L$$PWD/../../../boost/boost_mingw/lib/ -llibboost_program_options-mgw49-mt-d-x32-1_68.dll
-win32: LIBS += -L$$PWD/../../../boost/boost_mingw/lib/ -lboost_chrono-mgw49-mt-d-x32-1_68
-unix|win32: LIBS += -L$$PWD/../../../boost/boost_mingw/lib/ -llibboost_system-mgw49-mt-d-x32-1_68.dll
 INCLUDEPATH += $$PWD/../
+
+win32: LIBS += -L$$PWD/../../../boost_1_69_0/lib/ -llibboost_atomic-vc141-mt-gd-x64-1_69
+
+INCLUDEPATH += $$PWD/../../../boost_1_69_0
+DEPENDPATH += $$PWD/../../../boost_1_69_0
+
+win32: LIBS += -L$$PWD/../../../boost_1_69_0/lib/ -llibboost_context-vc141-mt-sgd-x64-1_69
+
+INCLUDEPATH += $$PWD/../../../boost_1_69_0
+DEPENDPATH += $$PWD/../../../boost_1_69_0
+
+win32: LIBS += -L$$PWD/../../../boost_1_69_0/lib/ -llibboost_program_options-vc141-mt-gd-x64-1_69
+
+INCLUDEPATH += $$PWD/../../../boost_1_69_0
+DEPENDPATH += $$PWD/../../../boost_1_69_0
+
+win32: LIBS += -L$$PWD/../../../boost_1_69_0/lib/ -llibboost_system-vc141-mt-gd-x64-1_69
+
+INCLUDEPATH += $$PWD/../../../boost_1_69_0
+DEPENDPATH += $$PWD/../../../boost_1_69_0

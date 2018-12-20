@@ -5,7 +5,7 @@
 ChatModel::ChatModel(QObject *parent) :
   QAbstractListModel(parent)
 {
-  //ChatMessage Cl1("Rafael", "Hello");
+
 }
 
 int ChatModel::rowCount(const QModelIndex &parent) const
@@ -14,7 +14,6 @@ int ChatModel::rowCount(const QModelIndex &parent) const
     {
       return 0;
     }
-
   return modelData.size();
 }
 

@@ -2,7 +2,7 @@ import QtQuick 2.11
 import QtQuick.Controls 2.4
 import QtQuick.Controls.Material 2.3
 import QtQuick.Layouts 1.3
-import client 1.0
+//import client 1.0
 
 ApplicationWindow {
     id: main
@@ -106,7 +106,7 @@ ApplicationWindow {
                 anchors.bottom: mainItem.bottom
                 width: mainItem.width
                 Layout.fillWidth: true
-                background: Material.Grey
+                background: Material.color(Material.Grey)
 
                 RowLayout {
                     width: mainItem.width
@@ -132,7 +132,8 @@ ApplicationWindow {
 
                         onClicked: {
                             if(messageField.length != 0) {
-                            cl.client_run(messageField.text, "USER")
+                             cl.send1("USER0000", messageField.text);
+                            //cl.client_run(messageField.text, "USER")
                             messageField.clear()
                             }
                             else {
