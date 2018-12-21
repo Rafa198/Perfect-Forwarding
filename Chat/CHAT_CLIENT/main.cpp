@@ -34,7 +34,6 @@ int main(int argc, char *argv[])
       ThreadPool threadPool(ioService, cpuCount);
       threadPool.setExceptionHandler(boost::bind(&exceptionHandle, _1, _2));
 
-
       boost::asio::ip::tcp::resolver resolver (ioService);
       boost::asio::ip::tcp::endpoint epoint(boost::asio::ip::address::from_string("127.0.0.1"),1234);
       auto epointI = resolver.resolve(epoint);

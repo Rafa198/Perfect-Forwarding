@@ -10,7 +10,6 @@ void chat_room::join(chat_participant_ptr participant)
     {
       participant->deliver(msg);
     }
-    //std::cout << std::endl;
 }
 
 void chat_room::leave(chat_participant_ptr participant)
@@ -21,8 +20,8 @@ void chat_room::leave(chat_participant_ptr participant)
 
 void chat_room::deliver(const ChatMessage &msg)
 {
-      recentMsgs_.push_back(msg);
-      //std::cout << "SERVER | " << msg.getUserName() << "TEXT: " << msg.getMessage() << std::endl;
+
+  recentMsgs_.push_back(msg);
 
   while (recentMsgs_.size() > max_recent_msgs)
     recentMsgs_.pop_front();
@@ -40,7 +39,6 @@ void chat_session::start()
 
 void chat_session::deliver(const ChatMessage &msg)
 {
-  //std::cout << "SERVER: DELIVER Writing..." << std::endl;
   bool writeInProgress = !writeMsgs_.empty();
   writeMsgs_.push_back(msg);
 
@@ -52,13 +50,12 @@ void chat_session::deliver(const ChatMessage &msg)
 
 void chat_session::doReadHeader()
 {
-  //std::cout << "SERVER: start doReadHeader..." << std::endl;
   auto self(shared_from_this());
   boost::asio::async_read(socket_,
-      boost::asio::buffer(readMsg_.getMessageInfo(), sizeof(ChatMessage::msgInfo)),
+      boost::asio::buffer(readMsg_.getHeader(), sizeof(ChatMessage::msgInfo)),
       [this, self](boost::system::error_code ec, std::size_t /*length*/)
       {
-        if (!ec /*&& read_msg_.decode_header()*/)
+        if (!ec)
         {
           readMsg_.allocate();
           doReadBody();
@@ -73,35 +70,30 @@ void chat_session::doReadHeader()
 
 void chat_session::doReadBody()
 {
-  //std::cout << "SERVER| start doReadBody..." << std::endl;
   auto self(shared_from_this());
   boost::asio::async_read(socket_,
-      boost::asio::buffer(readMsg_.getData(), readMsg_.getAllSize()),
+      boost::asio::buffer(readMsg_.getBody(), readMsg_.getBodySize()),
       [this, self](boost::system::error_code ec, std::size_t /*length*/)
       {
         if (!ec)
         {
-            readMsg_.parseBuffer();
-          std::cout << "SERVER | " << readMsg_.getUserName() << " TEXT: " << readMsg_.getMessage() << std::endl;
-          room_.deliver(readMsg_);
-          doReadHeader();
+            room_.deliver(readMsg_);
+            doReadHeader();
         }
         else
         {
           std::cerr << "SERVER| ERROR: " << ec << std::endl;
           room_.leave(shared_from_this());
         }
-        readMsg_.deallocate();
     });
 }
 
 void chat_session::doWrite()
 {
-  //std::cout << "SERVER: start doWRITE..." << std::endl;
   auto self(shared_from_this());
   boost::asio::async_write(socket_,
-      boost::asio::buffer(writeMsgs_.front().getData(),
-        writeMsgs_.front().getAllSize()),
+      boost::asio::buffer(writeMsgs_.front().getBuffer(),
+        writeMsgs_.front().getSize()),
       [this, self](boost::system::error_code ec, std::size_t /*length*/)
       {
         if (!ec)
@@ -118,5 +110,5 @@ void chat_session::doWrite()
           std::cerr << "SERVER| ERROR: " << ec << std::endl;
           room_.leave(shared_from_this());
         }
-      });
+    });
 }

@@ -27,7 +27,6 @@ public:
        socket_(service)
   {
     doConnect(endpoints);
-    //socket_->connect(tcp::endpoint(boost::asio::ip::address::from_string("127.0.0.1"), 1234));
   }
 
   Q_INVOKABLE void send1(QString user, QString mes);

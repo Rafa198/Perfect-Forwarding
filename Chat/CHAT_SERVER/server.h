@@ -21,7 +21,7 @@ public:
   virtual void deliver(const ChatMessage& msg) = 0;
 };
 typedef std::shared_ptr<chat_participant> chat_participant_ptr;
-//-------------------------------------------------
+
 class chat_room
 {
 public:
@@ -35,7 +35,7 @@ private:
   chatMessageQueue recentMsgs_;
 };
 
-//-------------------------------------
+
 typedef std::shared_ptr<chat_participant> chat_participant_ptr;
 
 class chat_session
@@ -64,8 +64,7 @@ private:
 class chat_server
 {
 public:
-  chat_server(boost::asio::io_context& io_context,
-      const tcp::endpoint &endpoint)
+  chat_server(boost::asio::io_context& io_context, const tcp::endpoint &endpoint)
     : acceptor_(io_context, endpoint)
   {
     do_accept();
@@ -89,22 +88,4 @@ private:
   tcp::acceptor acceptor_;
   chat_room room_;
 };
-
-
-//class Server
-//{
-//public:
-//  Server(boost::asio::io_service &io_service)
-//    : acceptor_(io_service, tcp::endpoint(tcp::v4(), 1234))
-//  {
-//    start_accept();
-//  }
-
-//  void handle_accept(con_handler::pointer connection, const boost::system::error_code &err);
-
-//private:
-//   tcp::acceptor acceptor_;
-//   void start_accept();
-//};
-
 #endif // SERVER_H
