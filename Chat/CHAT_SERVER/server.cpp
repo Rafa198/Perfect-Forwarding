@@ -55,8 +55,11 @@ void chat_session::doReadHeader()
       boost::asio::buffer(readMsg_.getHeader(), sizeof(ChatMessage::msgInfo)),
       [this, self](boost::system::error_code ec, std::size_t /*length*/)
       {
+      std::cout << "SERVER|doReadHEADER| getHeader: " << readMsg_.getHeader() << " Size: " << sizeof(ChatMessage::msgInfo) << std::endl;
+
         if (!ec)
         {
+          readMsg_.deleteBuf();
           readMsg_.allocate();
           doReadBody();
         }
@@ -75,6 +78,7 @@ void chat_session::doReadBody()
       boost::asio::buffer(readMsg_.getBody(), readMsg_.getBodySize()),
       [this, self](boost::system::error_code ec, std::size_t /*length*/)
       {
+      std::cout << "SERVER|doReadBODY| getbody: " << readMsg_.getBody() << " Size: " << readMsg_.getBodySize() << std::endl;
         if (!ec)
         {
             room_.deliver(readMsg_);
@@ -96,6 +100,8 @@ void chat_session::doWrite()
         writeMsgs_.front().getSize()),
       [this, self](boost::system::error_code ec, std::size_t /*length*/)
       {
+      std::cout << "SERVER|doWrite| getbuffer: " << writeMsgs_.front().getBuffer() << " Size: " << writeMsgs_.front().getSize() << std::endl;
+
         if (!ec)
         {
           writeMsgs_.pop_front();

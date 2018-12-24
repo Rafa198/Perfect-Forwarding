@@ -20,9 +20,8 @@ public:
     : buffer_(nullptr)
     , msgInfo_(chatMessage.msgInfo_)
   {
-    std::cout << "userNameSize: " << msgInfo_.userNameSize << std::endl;
-    std::cout << "userMessage: " << msgInfo_.messageSize << std::endl;
     unsigned int size = msgInfo_.userNameSize + msgInfo_.messageSize + sizeof (msgInfo);
+    std::cout << "ChatMessage(const ChatMessage &chatMessage)| SIZE: " << size << std::endl;
     buffer_ = new char[size];
     memcpy(buffer_, chatMessage.buffer_, size);
   }
@@ -32,6 +31,8 @@ public:
  {
    msgInfo_.userNameSize = userName.length();
    msgInfo_.messageSize = message.length();
+   std::cout << "ChatMessage(const std::string &userName, const std::string &message)|SIZE: "
+             << msgInfo_.userNameSize <<" "<< msgInfo_.messageSize << " " << sizeof (msgInfo) << std::endl;
 
    buffer_ = new char[msgInfo_.userNameSize + msgInfo_.messageSize + sizeof (msgInfo)];
    memcpy(buffer_, &msgInfo_, sizeof (msgInfo));
@@ -53,8 +54,7 @@ public:
     if(buffer_ == nullptr)
       {
         unsigned int size = msgInfo_.messageSize + msgInfo_.userNameSize + sizeof(msgInfo);
-        std::cout << "SIZE buffer_: " << size << std::endl;
-
+  std::cout << "ALLOCATE|SIZE: " << size << std::endl;
         try
         {
           buffer_ = new char[size];
@@ -64,6 +64,14 @@ public:
         {
           std::cout << "Exception: " << ex.what() << std::endl;
         }
+      }
+  }
+  void deleteBuf()
+  {
+    if(buffer_)
+      {
+        delete[] buffer_;
+        buffer_ = nullptr;
       }
   }
 
@@ -79,19 +87,17 @@ public:
 
   char* getBody()
   {
-    return buffer_ + sizeof (msgInfo);
+    return (buffer_ + sizeof (msgInfo));
   }
 
   unsigned int getBodySize() const noexcept
   {
-    std::cout << "GetAllSIZE: " << msgInfo_.messageSize + msgInfo_.userNameSize << std::endl;
-
     return (msgInfo_.messageSize + msgInfo_.userNameSize);
   }
 
   unsigned int getSize() const
   {
-    return getBodySize() + sizeof (msgInfo);
+    return (getBodySize() + sizeof (msgInfo));
   }
 
 private:
