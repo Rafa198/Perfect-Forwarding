@@ -20,7 +20,6 @@ void chat_room::leave(chat_participant_ptr participant)
 
 void chat_room::deliver(const ChatMessage &msg)
 {
-
   recentMsgs_.push_back(msg);
 
   while (recentMsgs_.size() > max_recent_msgs)
@@ -79,7 +78,8 @@ void chat_session::doReadBody()
       [this, self](boost::system::error_code ec, std::size_t /*length*/)
       {
       std::cout << "SERVER|doReadBODY| getbody: " << readMsg_.getBody() << " Size: " << readMsg_.getBodySize() << std::endl;
-        if (!ec)
+      //ch_mod.add(readMsg_.getBody());
+      if (!ec)
         {
             room_.deliver(readMsg_);
             doReadHeader();

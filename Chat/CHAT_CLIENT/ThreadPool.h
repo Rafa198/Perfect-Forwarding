@@ -11,7 +11,7 @@ class ThreadPool
 {
 public:
 
-  typedef boost::function<bool ( const boost::exception_ptr&, const std::string&)> ExceptionHandler;
+  typedef boost::function<bool(const boost::exception_ptr&, const std::string&)> ExceptionHandler;
 
   ThreadPool(boost::asio::io_service& ioService, const std::size_t size
     , const ExceptionHandler exceptionHandler = ExceptionHandler())

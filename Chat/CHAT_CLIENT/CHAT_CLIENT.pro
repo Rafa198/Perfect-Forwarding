@@ -15,7 +15,8 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         main.cpp \
     client.cpp \
-    chatmodel.cpp
+    chatmodel.cpp \
+    operatorlayer.cpp
 
 RESOURCES += qml.qrc
 
@@ -42,7 +43,8 @@ HEADERS += \
     client.h \
     chatmodel.h \
     ../message.h \
-    ThreadPool.h
+    ThreadPool.h \
+    operatorlayer.h
 INCLUDEPATH += $$PWD/../
 
 win32: LIBS += -L$$PWD/../../../boost_1_69_0/lib/ -llibboost_atomic-vc141-mt-gd-x64-1_69

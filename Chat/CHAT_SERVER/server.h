@@ -38,14 +38,13 @@ private:
 
 typedef std::shared_ptr<chat_participant> chat_participant_ptr;
 
-class chat_session
-  : public chat_participant,
-    public std::enable_shared_from_this<chat_session>
+class chat_session : public chat_participant, public std::enable_shared_from_this<chat_session>
 {
 public:
   chat_session(tcp::socket socket, chat_room& room)
-    : socket_(std::move(socket)),
-      room_(room) {}
+    : socket_(std::move(socket))
+    , room_(room)
+  {}
 
   void start();
   void deliver(const ChatMessage& msg);
@@ -59,6 +58,7 @@ private:
   chat_room& room_;
   ChatMessage readMsg_;
   chatMessageQueue writeMsgs_;
+  //ChatModel ch_mod;
 };
 
 class chat_server

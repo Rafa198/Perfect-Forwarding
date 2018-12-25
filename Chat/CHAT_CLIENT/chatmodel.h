@@ -12,8 +12,9 @@
 class ChatModel : public QAbstractListModel
 {
   Q_OBJECT
+
 public:
-  ChatModel(QObject *parent = nullptr);
+  ChatModel(QObject *parent);
 
   enum Roles {
     UserNameRole = Qt::UserRole + 1,
@@ -24,20 +25,22 @@ public:
   virtual QVariant data(const QModelIndex &index, int role) const;
   virtual QHash<int, QByteArray> roleNames() const;
 
+  void add(const QString &text);
+
 signals:
   void dataChanged();
+  void changed(QString userName, QString message);
 
 public slots:
-
+void insertInList(const QString &userName,const QString &message);
 
 private:
     struct ModelData {
-    std::string userName;
-    std::string message;
+    QString userName;
+    QString message;
   };
 
-  QList<ModelData> modelData;
-  //QString recipient;
+  QList<ModelData> modelData_;
 };
 
 #endif // CHATMODEL_H

@@ -2,10 +2,18 @@
 
 #include <QDebug>
 
+Client::Client(io_service &service, const tcp::resolver::results_type& endpoints)
+  : service_(service)
+  , socket_(service)
+{
+  doConnect(endpoints);
+}
+
 void Client::send1(QString user, QString mes)
 {
+
   //qDebug() << "CLIENT: " << user << ": " << mes << endl;
-  ChatMessage m(user.toStdString(),mes.toStdString());
+  ChatMessage m((user + "|").toStdString(), mes.toStdString());
   write(m);
 }
 
@@ -75,6 +83,12 @@ void Client::doReadBody()
             if (!ec)
             {
                 qDebug() << QString::fromStdString(std::string(readMsg_.getBody(),readMsg_.getBodySize()));
+                //layer_.add(readMsg_.getBody());
+                if (handle_)
+                  {
+                    handle_(QString::fromUtf8(readMsg_.getBody(),readMsg_.getBodySize()));
+                  }
+
                 doReadHeader();
             }
             else
@@ -82,7 +96,6 @@ void Client::doReadBody()
               socket_.close();
             }
           });
-
 }
 
 void Client::doWrite()

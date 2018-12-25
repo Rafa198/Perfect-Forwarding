@@ -3,6 +3,7 @@ import QtQuick.Controls 2.4
 import QtQuick.Controls.Material 2.3
 import QtQuick.Layouts 1.3
 //import client 1.0
+//import chatmodel 1.0
 
 ApplicationWindow {
     id: main
@@ -48,10 +49,10 @@ ApplicationWindow {
             Layout.preferredHeight: parent.height
             Material.background: Material.Grey
 
-//            Text {
-//                anchors.centerIn: parent
-//                text: parent.width + 'x' + parent.height
-//            }
+            Text {
+                anchors.centerIn: parent
+                text: parent.width + 'x' + parent.height
+            }
 
             Item {
                 id: messageRec
@@ -61,18 +62,14 @@ ApplicationWindow {
                 anchors.top: parent.top
                 //color: "red"
 
-                ListModel {
-                    id: textModel
-                    ListElement {
-                        msg: "cl.getMsg(1)"
-                    }
-                }
+
 
                 ColumnLayout {
                     anchors.fill: parent
 
                 ListView {
                     id: viewM
+                    model: chmod
                     Layout.fillWidth: true
                     Layout.fillHeight: true
                     Layout.margins: pane.leftPadding + messageField.leftPadding
@@ -80,7 +77,15 @@ ApplicationWindow {
                     displayMarginEnd: 40
                     verticalLayoutDirection: ListView.BottomToTop
                     spacing: 12
-                    model: textModel
+
+                    onCountChanged: {
+                        console.log(count);
+                    }
+
+                    onModelChanged: {
+                        console.log("Model CHANGED", model)
+                    }
+
                     delegate: RowLayout {
                      Layout.maximumWidth: parent.height / 2
                      spacing: 5
@@ -92,7 +97,7 @@ ApplicationWindow {
 
                          Text {
                              color: "white"
-                             text: "message " + msg
+                             text:"USERNAME: " + userName + " MESSAGE: " + message
                          }
                      }
                     }
@@ -133,6 +138,7 @@ ApplicationWindow {
                         onClicked: {
                             if(messageField.length != 0) {
                              cl.send1("USER0000", messageField.text);
+
                             //cl.client_run(messageField.text, "USER")
                             messageField.clear()
                             }
