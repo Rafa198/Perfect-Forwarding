@@ -54,11 +54,11 @@ private:
   void doReadBody();
   void doWrite();
 
+private:
   tcp::socket socket_;
   chat_room& room_;
   ChatMessage readMsg_;
   chatMessageQueue writeMsgs_;
-  //ChatModel ch_mod;
 };
 
 class chat_server
@@ -85,6 +85,7 @@ private:
         });
   }
 
+private:
   tcp::acceptor acceptor_;
   chat_room room_;
 };

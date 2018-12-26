@@ -1,9 +1,8 @@
 #include "operatorlayer.h"
-
-#include <QQmlContext>
-
 #include <chatmodel.h>
 #include <client.h>
+
+#include <QQmlContext>
 
 OperatorLayer::OperatorLayer(QQmlApplicationEngine &engine, boost::asio::io_service &service)
   : QObject()

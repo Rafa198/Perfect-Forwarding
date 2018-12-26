@@ -6,9 +6,6 @@
 #include <QString>
 #include <QList>
 
-#include <list>
-#include <string>
-
 class ChatModel : public QAbstractListModel
 {
   Q_OBJECT

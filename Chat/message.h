@@ -21,7 +21,6 @@ public:
     , msgInfo_(chatMessage.msgInfo_)
   {
     unsigned int size = msgInfo_.userNameSize + msgInfo_.messageSize + sizeof (msgInfo);
-    std::cout << "ChatMessage(const ChatMessage &chatMessage)| SIZE: " << size << std::endl;
     buffer_ = new char[size];
     memcpy(buffer_, chatMessage.buffer_, size);
   }
@@ -31,10 +30,9 @@ public:
  {
    msgInfo_.userNameSize = userName.length();
    msgInfo_.messageSize = message.length();
-   std::cout << "ChatMessage(const std::string &userName, const std::string &message)|SIZE: "
-             << msgInfo_.userNameSize <<" "<< msgInfo_.messageSize << " " << sizeof (msgInfo) << std::endl;
 
    buffer_ = new char[msgInfo_.userNameSize + msgInfo_.messageSize + sizeof (msgInfo)];
+
    memcpy(buffer_, &msgInfo_, sizeof (msgInfo));
    memcpy(buffer_ + sizeof (msgInfo), userName.c_str(), msgInfo_.userNameSize);
    memcpy(buffer_ + sizeof (msgInfo) + msgInfo_.userNameSize, message.c_str(), msgInfo_.messageSize);
@@ -54,7 +52,7 @@ public:
     if(buffer_ == nullptr)
       {
         unsigned int size = msgInfo_.messageSize + msgInfo_.userNameSize + sizeof(msgInfo);
-  std::cout << "ALLOCATE|SIZE: " << size << std::endl;
+
         try
         {
           buffer_ = new char[size];

@@ -78,7 +78,6 @@ void chat_session::doReadBody()
       [this, self](boost::system::error_code ec, std::size_t /*length*/)
       {
       std::cout << "SERVER|doReadBODY| getbody: " << readMsg_.getBody() << " Size: " << readMsg_.getBodySize() << std::endl;
-      //ch_mod.add(readMsg_.getBody());
       if (!ec)
         {
             room_.deliver(readMsg_);

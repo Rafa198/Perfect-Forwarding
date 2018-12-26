@@ -1,5 +1,4 @@
 #include <QGuiApplication>
-#include <QDebug>
 
 #include <QObject>
 #include <QQmlApplicationEngine>
@@ -8,9 +7,7 @@
 #include <boost/thread.hpp>
 #include <boost/bind.hpp>
 
-#include <iostream>
-
-#include "operatorlayer.h"
+#include <operatorlayer.h>
 #include <ThreadPool.h>
 
 
@@ -28,6 +25,7 @@ int main(int argc, char *argv[])
   std::size_t cpuCount(!(boost::thread::hardware_concurrency()) ? 2 : boost::thread::hardware_concurrency() * 2);
   boost::asio::io_service ioService(cpuCount);
   std::srand(std::time(0));
+
   ThreadPool threadPool(ioService, cpuCount);
   threadPool.setExceptionHandler(boost::bind(&exceptionHandle, _1, _2));
 
@@ -36,7 +34,6 @@ int main(int argc, char *argv[])
   engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
 
   int returnCode = app.exec();
-
   threadPool.stop();
   return returnCode;
 }
