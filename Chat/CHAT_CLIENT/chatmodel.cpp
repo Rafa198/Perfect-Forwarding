@@ -17,11 +17,11 @@ int ChatModel::rowCount(const QModelIndex &parent) const
 
 QVariant ChatModel::data(const QModelIndex &index, int role) const
 {
+
   if(!index.isValid())
     {
       return QVariant();
     }
-
   const ModelData& data = modelData_[index.row()];
   switch (role) {
     case ChatModel::Roles::UserNameRole:
@@ -47,9 +47,12 @@ void ChatModel::add(const QString &text)
 {
    auto x = [this](const QString &str)
    {
+
    QStringList str1 = str.split('|');
+
    changed(str1[0], str1[1]);
    };
+
     std::thread th(x,text);
     th.join();
 }
@@ -61,6 +64,7 @@ void ChatModel::insertInList(const QString &userName,const QString &message)
   ModelData data_;
   data_.userName = userName;
   data_.message  = message;
+
   modelData_.push_back(data_);
 
   endInsertRows();

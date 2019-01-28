@@ -2,34 +2,42 @@
 #define MESSAGE_H
 
 #include <string>
-#include <iostream>
 
 class ChatMessage {
 public:
 
+  enum class Flags {
+    MESSAGE,
+    FILE
+  };
+
   struct msgInfo {
-  unsigned int userNameSize = 0;
-  unsigned int messageSize = 0;
+    Flags flag = Flags::MESSAGE;
+    unsigned long long int userNameSize = 0;
+    unsigned long long int messageSize = 0;
   };
 
   ChatMessage()
     : buffer_(nullptr)
-  {}
+  { }
+
+  ChatMessage(ChatMessage&&) = delete;
 
   ChatMessage(const ChatMessage &chatMessage)
     : buffer_(nullptr)
     , msgInfo_(chatMessage.msgInfo_)
   {
-    unsigned int size = msgInfo_.userNameSize + msgInfo_.messageSize + sizeof (msgInfo);
+    unsigned long long int size = msgInfo_.userNameSize + msgInfo_.messageSize + sizeof (msgInfo);
     buffer_ = new char[size];
     memcpy(buffer_, chatMessage.buffer_, size);
   }
 
- ChatMessage(const std::string &userName, const std::string &message)
+ ChatMessage(const std::string &userName, const std::string &message, Flags flag = Flags::MESSAGE)
    : buffer_(nullptr)
  {
    msgInfo_.userNameSize = userName.length();
    msgInfo_.messageSize = message.length();
+   msgInfo_.flag = flag;
 
    buffer_ = new char[msgInfo_.userNameSize + msgInfo_.messageSize + sizeof (msgInfo)];
 
@@ -51,7 +59,7 @@ public:
   {
     if(buffer_ == nullptr)
       {
-        unsigned int size = msgInfo_.messageSize + msgInfo_.userNameSize + sizeof(msgInfo);
+        unsigned long long int size = msgInfo_.messageSize + msgInfo_.userNameSize + sizeof(msgInfo);
 
         try
         {
@@ -60,10 +68,11 @@ public:
         }
         catch (std::exception ex)
         {
-          std::cout << "Exception: " << ex.what() << std::endl;
+          throw std::runtime_error(ex.what());
         }
       }
   }
+
   void deleteBuf()
   {
     if(buffer_)
@@ -88,14 +97,19 @@ public:
     return (buffer_ + sizeof (msgInfo));
   }
 
-  unsigned int getBodySize() const noexcept
+  unsigned long long int getBodySize() const noexcept
   {
     return (msgInfo_.messageSize + msgInfo_.userNameSize);
   }
 
-  unsigned int getSize() const
+  unsigned long long int getSize() const
   {
     return (getBodySize() + sizeof (msgInfo));
+  }
+
+  Flags getFlagToMessage() const
+  {
+    return msgInfo_.flag;
   }
 
 private:

@@ -2,8 +2,7 @@ import QtQuick 2.11
 import QtQuick.Controls 2.4
 import QtQuick.Controls.Material 2.3
 import QtQuick.Layouts 1.3
-//import client 1.0
-//import chatmodel 1.0
+import QtQuick.Dialogs 1.2
 
 ApplicationWindow {
     id: main
@@ -13,11 +12,75 @@ ApplicationWindow {
     height: 480
     title: "CHAT APPLICATION"
 
+    property string user: ""
+
+    function basename(str)
+    {
+        return (str.slice(str.lastIndexOf("/") + 1))
+    }
+
+    FileDialog {
+        id: fileDialog
+        title: "Выберите папку с изображениями"
+
+        onAccepted: {            
+            cl.sendFile(fileDialog.fileUrl, basename(fileUrl.toString()))
+            cl.sendMessage("System", "Пользователь: " + user + " отправил(а) файл: " + basename(fileUrl.toString()))
+        }
+    }
+
+    Rectangle {
+        id: register
+        width: 400
+        height: 200
+        anchors.centerIn: parent
+        color: Material.color(Material.Blue, Material.Shade700)
+
+        TextInput {
+            id: userNameInput
+            width: register.width / 2
+            height: 25
+            anchors.centerIn: parent
+            text: "Enter NickName"
+            font.pointSize: 10
+
+            Label {
+                id: textInputLabel
+                width: userNameInput.width
+                anchors.bottom: userNameInput.top
+                text: "Name:"
+            }
+        }
+
+        Button {
+            id: regUser
+            width: register.width
+            height: 50
+            anchors.bottom: register.bottom
+            anchors.centerIn: register.bottom
+            text: "Enter"            
+            Material.background: Material.BlueGrey
+
+            onClicked: {
+                if(userNameInput.text.length > 0 && userNameInput.text !== "") {
+                    user = userNameInput.text
+                    register.visible = false;
+                    layout.visible = true;
+                    columnLayout.visible = true;
+                }
+                else {
+                    userNameInput.text = "Error! Enter a name!!!"
+                }
+            }
+        }
+    }
+
     RowLayout {
         id: layout
-        anchors.left: parent.left
         width: parent.width / 4
         height: parent.height
+        anchors.left: parent.left
+        visible: false
         spacing: 5
 
         Item {
@@ -26,33 +89,54 @@ ApplicationWindow {
             Layout.preferredWidth: parent.width / 3
             Layout.maximumWidth: parent.width
             Layout.minimumHeight: parent.height
-            Material.background: Material.Grey
 
-            Text {
-                anchors.centerIn: parent
-                text: parent.width + 'x' + parent.height
+            RowLayout {             
+                width: layout.width
+
+             ListView {
+                 id: userNamesView
+                 Layout.preferredWidth: parent.width
+                 Layout.preferredHeight: parent.height
+                 model: chmod
+
+                 delegate: RowLayout {                  
+                     spacing: 5
+
+                  Rectangle {
+                      width: parent.width
+                      height: 25
+                      color: Material.color(Material.Blue)                      
+
+                      Text {
+                          anchors.left: parent.left
+                          anchors.right: parent.right
+                          text: userName
+                          font.pointSize: 12
+                          color: "white"
+                      }
+                  }
+                 }
+                 ScrollBar.vertical: ScrollBar {}             
+             }
             }
         }
     }
 
     ColumnLayout {
         id: columnLayout
-        anchors.left: layout.right
+        visible: false
         height: parent.height
         width: parent.width - layout.width
+        anchors.left: layout.right        
         spacing: 5
 
         Item {
             id: mainItem
             Layout.fillWidth: true
+            Layout.fillHeight: true
             Layout.preferredWidth: parent.width - (parent.width / 3)
-            Layout.preferredHeight: parent.height
+            Layout.preferredHeight: parent.height - sendButton.height
             Material.background: Material.Grey
-
-            Text {
-                anchors.centerIn: parent
-                text: parent.width + 'x' + parent.height
-            }
 
             Item {
                 id: messageRec
@@ -60,61 +144,90 @@ ApplicationWindow {
                 anchors.bottom: pane.top
                 anchors.left: parent.left
                 anchors.top: parent.top
-                //color: "red"
-
-
 
                 ColumnLayout {
                     anchors.fill: parent
 
-                ListView {
+                ListView {                   
                     id: viewM
-                    model: chmod
                     Layout.fillWidth: true
-                    Layout.fillHeight: true
+                    Layout.preferredHeight: messageRec.height - pane.height - 25
+                    verticalLayoutDirection: ListView.TopToBottom
                     Layout.margins: pane.leftPadding + messageField.leftPadding
                     displayMarginBeginning: 40
-                    displayMarginEnd: 40
-                    verticalLayoutDirection: ListView.BottomToTop
-                    spacing: 12
+                    displayMarginEnd: 40                    
+                    model: chmod
+                    spacing: 6
 
-                    onCountChanged: {
-                        console.log(count);
-                    }
+                    delegate: RowLayout {                     
+                        Layout.maximumWidth: parent.height / 2
+                        spacing: 2
 
-                    onModelChanged: {
-                        console.log("Model CHANGED", model)
-                    }
-
-                    delegate: RowLayout {
-                     Layout.maximumWidth: parent.height / 2
-                     spacing: 5
-
-                     Item {
+                     Rectangle {
                          id: msgItem
-                         width: 200
-                         height: 50
+                         width: Math.min(text1.implicitWidth + 24, viewM.width - viewM.spacing)
+                         height: text1.implicitHeight + 24
+                         color: Material.color(Material.LightBlue)                        
 
-                         Text {
+                         Label {
+                             id: text1
+                             anchors.fill: parent
+                             anchors.margins: 12
+                             text: userName + "\n" + message
                              color: "white"
-                             text:"USERNAME: " + userName + " MESSAGE: " + message
-                         }
+                             wrapMode: Label.Wrap
+                         }                     
                      }
                     }
-                    ScrollBar.vertical: ScrollBar {}
+
+                    Flickable {                       
+                        Layout.fillWidth: viewM.width
+                        Layout.preferredHeight: viewM.height - 25
+
+                        ScrollBar.vertical: ScrollBar {
+                            id: scroll
+                            parent: messageRec
+                            Layout.alignment: Qt.AlignTop | Qt.AlignLeft
+                            active: true                            
+
+                            onHeightChanged: {
+                                scroll.increase()
+                            }
+                        }
+                    }
                 }
                 }
             }
 
-            Pane {
+            Pane {                
                 id: pane
-                anchors.bottom: mainItem.bottom
                 width: mainItem.width
+                anchors.bottom: mainItem.bottom                
                 Layout.fillWidth: true
-                background: Material.color(Material.Grey)
+                background: Material.color(Material.Black)
+                Material.foreground: Material.Black
+                Material.elevation: 6
+                Material.theme: Material.Dark
 
                 RowLayout {
                     width: mainItem.width
+
+                    Button {                       
+                        id: sendFileButton
+                        height: 45
+                        width: parent / 4
+                        Layout.alignment: Qt.AlignLeft | Qt.AlignBottom
+
+                        Image {
+                            height: parent
+                            width: parent
+                            source: "file:/QtProjects/chatproject/CHAT_CLIENT/res/upFile.png"
+                        }
+
+                        onClicked: {
+                            fileDialog.open()
+                        }
+                    }
 
                     TextArea {
                         id: messageField                        
@@ -126,21 +239,19 @@ ApplicationWindow {
                     Button {
                         id: sendButton
                         visible: true
-                        text: "Отправить"
-                        Material.background: Material.BlueGrey
-                        highlighted: true
-                        anchors.right: parent.right
-                        anchors.bottom: parent.bottom
                         width: parent.width / 4
                         height: 40
+                        Layout.alignment: Qt.AlignRight | Qt.AlignBottom
+                        text: "Отправить"
+                        Material.background: Material.Blue
+                        highlighted: true
                         enabled: messageField.length > 0
 
                         onClicked: {
-                            if(messageField.length != 0) {
-                             cl.send1("USER0000", messageField.text);
-
-                            //cl.client_run(messageField.text, "USER")
-                            messageField.clear()
+                            if(messageField.length > 0) {                             
+                                cl.sendMessage(user, messageField.text);
+                                messageField.clear()
+                                scroll.increase()
                             }
                             else {
                                 console.log("empty text input!!!")
@@ -149,46 +260,6 @@ ApplicationWindow {
                     }
                 }
             }
-
-//            TextInput {
-//                id: txtInput
-//                text: "Введите текст..."
-//                anchors.right: sendButton.left
-//                anchors.left: parent.left
-//                anchors.bottom: parent.bottom
-//                selectByMouse: true
-//                selectionColor: "green"
-//                font.pixelSize: 14
-//                color: "white"
-//                height: 40
-//                width: (3 / 4) * parent.width
-//                //horizontalAlignment: Text.AlignHCenter
-//                verticalAlignment: Text.AlignVCenter
-////                Keys.onPressed: {
-////                    if(event.key === 16777220) {
-////                        if(txtInput.length != 0) {
-////                        cl.client_run(txtInput.text)
-////                        txtInput.clear()
-////                        }
-////                        else {
-////                            console.log("empty textInput!!!")
-////                        }
-////                    }
-//                }
-
-////                MouseArea{
-////                    id: marea
-////                    visible: false
-////                    anchors.fill: txtInput
-
-////                    onClicked: {
-////                        txtInput.clear()
-////                    }
-
-////                }
-//           }
-
-
         }
     }
 }

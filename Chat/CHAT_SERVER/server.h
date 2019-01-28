@@ -4,9 +4,13 @@
 #include <boost/thread.hpp>
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/asio.hpp>
+#include <boost/thread/mutex.hpp>
+#include <boost/bind.hpp>
 
 #include <deque>
 #include <set>
+#include <iostream>
+#include <fstream>
 
 #include <message.h>
 
@@ -20,6 +24,7 @@ public:
   virtual ~chat_participant() {}
   virtual void deliver(const ChatMessage& msg) = 0;
 };
+
 typedef std::shared_ptr<chat_participant> chat_participant_ptr;
 
 class chat_room
@@ -31,10 +36,9 @@ public:
 
 private:
   std::set<chat_participant_ptr> participants_;
-  enum { max_recent_msgs = 100 };
+  enum { max_recent_msgs = 1000 };
   chatMessageQueue recentMsgs_;
 };
-
 
 typedef std::shared_ptr<chat_participant> chat_participant_ptr;
 
@@ -44,7 +48,10 @@ public:
   chat_session(tcp::socket socket, chat_room& room)
     : socket_(std::move(socket))
     , room_(room)
-  {}
+  { }
+
+  ~chat_session()
+  { }
 
   void start();
   void deliver(const ChatMessage& msg);
@@ -64,29 +71,20 @@ private:
 class chat_server
 {
 public:
-  chat_server(boost::asio::io_context& io_context, const tcp::endpoint &endpoint)
+  chat_server(boost::asio::io_service& io_context, const tcp::endpoint &endpoint)
     : acceptor_(io_context, endpoint)
   {
     do_accept();
   }
 
 private:
-  void do_accept()
-  {
-    acceptor_.async_accept(
-        [this](boost::system::error_code ec, tcp::socket socket)
-        {
-          if (!ec)
-          {
-            std::make_shared<chat_session>(std::move(socket), room_)->start();
-          }
-
-          do_accept();
-        });
-  }
+  void do_accept();
+  void StartAccept();
+  void HandleAccept(chat_session* psession, boost::system::error_code const& errcode);
 
 private:
   tcp::acceptor acceptor_;
   chat_room room_;
 };
+
 #endif // SERVER_H

@@ -29,7 +29,7 @@ signals:
   void changed(QString userName, QString message);
 
 public slots:
-void insertInList(const QString &userName,const QString &message);
+  void insertInList(const QString &userName,const QString &message);
 
 private:
     struct ModelData {

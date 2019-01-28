@@ -10,16 +10,15 @@
 
 #include <string>
 #include <queue>
-#include <functional>
+#include <fstream>
 
 #include <message.h>
 
 using namespace boost::asio;
 using ip::tcp;
+using ReadHandle = std::function<void(ChatMessage&)>;
 
 typedef std::deque<ChatMessage> chatMessageQueue;
-
-using ReadHandle = std::function<void(const QString&)>;
 
 class Client : public QObject, public boost::enable_shared_from_this<Client>
 {
@@ -28,7 +27,8 @@ class Client : public QObject, public boost::enable_shared_from_this<Client>
 public:
   Client(io_service& service, const tcp::resolver::results_type& endpoints);
 
-  Q_INVOKABLE void send1(QString user, QString mes);
+  Q_INVOKABLE void sendMessage(QString user, QString mes);
+  Q_INVOKABLE void sendFile(const QString &filePath, const QString &user);
 
   void write(const ChatMessage &msg);
   void close();
@@ -43,13 +43,18 @@ private:
 
 private:
   io_service& service_;
-  boost::system::error_code error_;
   tcp::socket socket_;
-
+  boost::system::error_code error_;
   ChatMessage readMsg_;
   chatMessageQueue writeMsg_;
-
   ReadHandle handle_;
+  std::ifstream ifs_;
+
+private:
+  static const unsigned int fileBufSize = 1024 * 16;
+  char* fileBuffer;
+  long long int fileSize;
+  long long int sendBytes;
 };
 
 #endif // CLIENT_H

@@ -31,13 +31,10 @@ qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
-
 win32:LIBS += -lsetupapi
 win32:LIBS += -lwsock32
 win32:LIBS += -lws2_32
 win32:DEFINES += _WIN32_WINNT=0x0501
-
-
 
 HEADERS += \
     client.h \
@@ -71,3 +68,6 @@ win32: LIBS += -L$$PWD/../../../boost_1_69_0/lib/ -llibboost_thread-vc141-mt-gd-
 
 INCLUDEPATH += $$PWD/../../../boost_1_69_0
 DEPENDPATH += $$PWD/../../../boost_1_69_0
+
+DISTFILES += \
+    res/upFile.png

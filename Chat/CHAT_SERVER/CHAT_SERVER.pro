@@ -38,3 +38,23 @@ win32: LIBS += -L$$PWD/../../../boost_1_69_0/lib/ -llibboost_system-vc141-mt-gd-
 
 INCLUDEPATH += $$PWD/../../../boost_1_69_0
 DEPENDPATH += $$PWD/../../../boost_1_69_0
+
+win32: LIBS += -L$$PWD/../../../boost_1_69_0/lib/ -llibboost_regex-vc141-mt-gd-x64-1_69
+
+INCLUDEPATH += $$PWD/../../../boost_1_69_0
+DEPENDPATH += $$PWD/../../../boost_1_69_0
+
+win32: LIBS += -L$$PWD/../../../boost_1_69_0/lib/ -llibboost_iostreams-vc141-mt-gd-x64-1_69
+
+INCLUDEPATH += $$PWD/../../../boost_1_69_0
+DEPENDPATH += $$PWD/../../../boost_1_69_0
+
+win32: LIBS += -L$$PWD/../../../boost_1_69_0/lib/ -llibboost_filesystem-vc141-mt-gd-x64-1_69
+
+INCLUDEPATH += $$PWD/../../../boost_1_69_0
+DEPENDPATH += $$PWD/../../../boost_1_69_0
+
+win32: LIBS += -L$$PWD/../../../boost_1_69_0/lib/ -llibboost_iostreams-vc141-mt-gd-x64-1_69
+
+INCLUDEPATH += $$PWD/../../../boost_1_69_0
+DEPENDPATH += $$PWD/../../../boost_1_69_0

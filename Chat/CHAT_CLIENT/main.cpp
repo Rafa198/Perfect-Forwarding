@@ -10,7 +10,6 @@
 #include <operatorlayer.h>
 #include <ThreadPool.h>
 
-
 bool exceptionHandle(const boost::exception_ptr&, const std::string&)
 {
   return false;
@@ -22,15 +21,14 @@ int main(int argc, char *argv[])
   QGuiApplication app(argc, argv);
   QQmlApplicationEngine engine;
 
-  std::size_t cpuCount(!(boost::thread::hardware_concurrency()) ? 2 : boost::thread::hardware_concurrency() * 2);
+  size_t cpuCount(!(boost::thread::hardware_concurrency()) ? 2 : boost::thread::hardware_concurrency() * 2);
   boost::asio::io_service ioService(cpuCount);
-  std::srand(std::time(0));
+  std::srand(std::time(nullptr));
 
   ThreadPool threadPool(ioService, cpuCount);
   threadPool.setExceptionHandler(boost::bind(&exceptionHandle, _1, _2));
 
   OperatorLayer operLayer(engine, ioService);
-
   engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
 
   int returnCode = app.exec();
