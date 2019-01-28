@@ -19,16 +19,15 @@ OperatorLayer::OperatorLayer(QQmlApplicationEngine &engine, boost::asio::io_serv
   engine.rootContext()->setContextProperty("cl", client_);
   engine.rootContext()->setContextProperty("chmod", chatModel_);
 
-  client_->setReadHandle([this](ChatMessage &chatmes){
+  client_->setReadHandle([this](ChatMessage &chatMessage){
 
-    if(chatmes.getFlagToMessage() == ChatMessage::Flags::MESSAGE)
+    if(chatMessage.getFlagToMessage() == ChatMessage::Flags::MESSAGE)
       {
-        chatModel_->add(QString::fromUtf8(chatmes.getBody(), chatmes.getBodySize()));
+        chatModel_->add(QString::fromUtf8(chatMessage.getBody(), chatMessage.getBodySize()));
       }
     else
       {
-        QByteArray str = QByteArray(chatmes.getBody(), chatmes.getBodySize());
-
+        QByteArray str = QByteArray(chatMessage.getBody(), chatMessage.getBodySize());
         auto filename = str.mid(0, str.indexOf('|'));
         std::string str1 = str.mid(str.indexOf('|') + 1).toStdString();
 

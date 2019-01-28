@@ -28,35 +28,36 @@ void Client::sendFile(const QString &filePath, const QString &user)
       throw std::runtime_error("Unable to open input file");
     }
 
-  long long int difference;
-  long long int dSize;
+  long long int difference = 0;
+  long long int dSize = 0;
 
   fileBuffer = new char[fileBufSize];
 
-    while(sendBytes < fileSize)
-      {
-        difference = fileSize - sendBytes;
-        dSize = fileBufSize;
 
-        if(difference < fileBufSize)
-          {
-            dSize = difference;
-          }
+  while(sendBytes < fileSize)
+    {
+      difference = fileSize - sendBytes;
+      dSize = fileBufSize;
 
-        ifs_.read(fileBuffer, dSize);
-        sendBytes += dSize;
-        ChatMessage mes(user.toStdString() + "|", std::string(fileBuffer, dSize), ChatMessage::Flags::FILE);
-        write(mes);
-      }
+      if(difference < fileBufSize)
+        {
+          dSize = difference;
+        }
 
-    ifs_.close();
-    delete[] fileBuffer;
+      ifs_.read(fileBuffer, dSize);
+      sendBytes += dSize;
+      ChatMessage mes(user.toStdString() + "|", std::string(fileBuffer, dSize), ChatMessage::Flags::FILE);
+      write(mes);
+    }
+
+  ifs_.close();
+  delete[] fileBuffer;
 }
 
 void Client::write(const ChatMessage &msg)
 {
   boost::asio::post(service_, [this, msg]()
-  {
+  {     
       bool writeInProgress = !writeMsg_.empty();
       writeMsg_.push_back(msg);
 

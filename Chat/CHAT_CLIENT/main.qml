@@ -34,7 +34,8 @@ ApplicationWindow {
         width: 400
         height: 200
         anchors.centerIn: parent
-        color: Material.color(Material.Blue, Material.Shade700)
+        //color: Material.color(Material.Blue, Material.Shade700)
+        color: Material.color(Material.LightBlue)
 
         TextInput {
             id: userNameInput
@@ -58,8 +59,9 @@ ApplicationWindow {
             height: 50
             anchors.bottom: register.bottom
             anchors.centerIn: register.bottom
-            text: "Enter"            
-            Material.background: Material.BlueGrey
+            text: "Enter"
+            //background: Material.color(Material.Dark)
+            //Material.background: Material.Dark
 
             onClicked: {
                 if(userNameInput.text.length > 0 && userNameInput.text !== "") {
@@ -84,40 +86,26 @@ ApplicationWindow {
         spacing: 5
 
         Item {
-            Layout.fillWidth: true
-            Layout.minimumWidth: parent.width / 3
+            Layout.fillWidth: true            
             Layout.preferredWidth: parent.width / 3
             Layout.maximumWidth: parent.width
             Layout.minimumHeight: parent.height
+            Layout.minimumWidth: parent.width / 3
 
-            RowLayout {             
+            ColumnLayout {
                 width: layout.width
 
-             ListView {
-                 id: userNamesView
-                 Layout.preferredWidth: parent.width
-                 Layout.preferredHeight: parent.height
-                 model: chmod
+                Button {
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 50
+                    text: "MENU"
+                }
 
-                 delegate: RowLayout {                  
-                     spacing: 5
-
-                  Rectangle {
-                      width: parent.width
-                      height: 25
-                      color: Material.color(Material.Blue)                      
-
-                      Text {
-                          anchors.left: parent.left
-                          anchors.right: parent.right
-                          text: userName
-                          font.pointSize: 12
-                          color: "white"
-                      }
-                  }
-                 }
-                 ScrollBar.vertical: ScrollBar {}             
-             }
+                Button {
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 50
+                    text: "SETTINGS"
+                }
             }
         }
     }
@@ -152,8 +140,8 @@ ApplicationWindow {
                     id: viewM
                     Layout.fillWidth: true
                     Layout.preferredHeight: messageRec.height - pane.height - 25
-                    verticalLayoutDirection: ListView.TopToBottom
                     Layout.margins: pane.leftPadding + messageField.leftPadding
+                    verticalLayoutDirection: ListView.TopToBottom                    
                     displayMarginBeginning: 40
                     displayMarginEnd: 40                    
                     model: chmod

@@ -6,7 +6,7 @@ int main()
   {
     boost::asio::io_service iocon;
     tcp::endpoint endpoint(tcp::v4(), 1234);
-    chat_server server(iocon, endpoint);
+    Server server(iocon, endpoint);
     iocon.run();
   }
   catch(std::exception &e)

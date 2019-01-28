@@ -1,8 +1,6 @@
 #include "server.h"
 
-#include <iostream>
-
-void chat_room::join(chat_participant_ptr participant)
+void ChatRoom::join(chatParticipant_ptr participant)
 {
   std::cout << "SERVER| JOIN" << std::endl;
   participants_.insert(participant);
@@ -12,13 +10,13 @@ void chat_room::join(chat_participant_ptr participant)
     }
 }
 
-void chat_room::leave(chat_participant_ptr participant)
+void ChatRoom::leave(chatParticipant_ptr participant)
 {
   std::cout << "SERVER| LEAVE" << std::endl;
   participants_.erase(participant);
 }
 
-void chat_room::deliver(const ChatMessage &msg)
+void ChatRoom::deliver(const ChatMessage &msg)
 {
   recentMsgs_.push_back(msg);
 
@@ -33,14 +31,14 @@ void chat_room::deliver(const ChatMessage &msg)
     }
 }
 
-void chat_session::start()
+void ChatSession::start()
 {
   std::cout << "SERVER| START" << std::endl;
   room_.join(shared_from_this());
   doReadHeader();
 }
 
-void chat_session::deliver(const ChatMessage &msg)
+void ChatSession::deliver(const ChatMessage &msg)
 {
   bool writeInProgress = !writeMsgs_.empty();
   writeMsgs_.push_back(msg);
@@ -51,7 +49,7 @@ void chat_session::deliver(const ChatMessage &msg)
   }
 }
 
-void chat_session::doReadHeader()
+void ChatSession::doReadHeader()
 {
   auto self(shared_from_this());
   boost::asio::async_read(socket_, boost::asio::buffer(readMsg_.getHeader(), sizeof(ChatMessage::msgInfo)),
@@ -71,7 +69,7 @@ void chat_session::doReadHeader()
     });
 }
 
-void chat_session::doReadBody()
+void ChatSession::doReadBody()
 {
   auto self(shared_from_this());
   boost::asio::async_read(socket_, boost::asio::buffer(readMsg_.getBody(), readMsg_.getBodySize()),
@@ -90,7 +88,7 @@ void chat_session::doReadBody()
     });
 }
 
-void chat_session::doWrite()
+void ChatSession::doWrite()
 {
   auto self(shared_from_this());
   boost::asio::async_write(socket_, boost::asio::buffer(writeMsgs_.front().getBuffer(), writeMsgs_.front().getSize()),
@@ -113,14 +111,14 @@ void chat_session::doWrite()
     });
 }
 
-void chat_server::do_accept()
+void Server::do_accept()
 {
   acceptor_.async_accept(
       [this](boost::system::error_code ec, tcp::socket socket)
       {
         if (!ec)
         {
-          std::make_shared<chat_session>(std::move(socket), room_)->start();
+          std::make_shared<ChatSession>(std::move(socket), room_)->start();
         }
         do_accept();
   });

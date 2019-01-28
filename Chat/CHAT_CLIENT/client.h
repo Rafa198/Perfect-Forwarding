@@ -51,7 +51,7 @@ private:
   std::ifstream ifs_;
 
 private:
-  static const unsigned int fileBufSize = 1024 * 16;
+  static const unsigned int fileBufSize = 1024 * 32;
   char* fileBuffer;
   long long int fileSize;
   long long int sendBytes;
