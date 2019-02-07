@@ -7,15 +7,13 @@ import QtQuick.Dialogs 1.2
 ApplicationWindow {
     id: main
     visible: true
-    //flags: Qt.FramelessWindowHint
     width: 640
     height: 480
     title: "CHAT APPLICATION"
 
     property string user: ""
 
-    function basename(str)
-    {
+    function basename(str){
         return (str.slice(str.lastIndexOf("/") + 1))
     }
 
@@ -23,9 +21,9 @@ ApplicationWindow {
         id: fileDialog
         title: "Выберите папку с изображениями"
 
-        onAccepted: {            
-            cl.sendFile(fileDialog.fileUrl, basename(fileUrl.toString()))
+        onAccepted: {
             cl.sendMessage("System", "Пользователь: " + user + " отправил(а) файл: " + basename(fileUrl.toString()))
+            cl.sendFile(fileDialog.fileUrl, basename(fileUrl.toString()))            
         }
     }
 
@@ -34,7 +32,6 @@ ApplicationWindow {
         width: 400
         height: 200
         anchors.centerIn: parent
-        //color: Material.color(Material.Blue, Material.Shade700)
         color: Material.color(Material.LightBlue)
 
         TextInput {
@@ -60,8 +57,6 @@ ApplicationWindow {
             anchors.bottom: register.bottom
             anchors.centerIn: register.bottom
             text: "Enter"
-            //background: Material.color(Material.Dark)
-            //Material.background: Material.Dark
 
             onClicked: {
                 if(userNameInput.text.length > 0 && userNameInput.text !== "") {

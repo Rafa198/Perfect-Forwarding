@@ -19,42 +19,28 @@ win32:DEFINES += _WIN32_WINNT=0x0501
 
 INCLUDEPATH += $$PWD/../
 
-win32: LIBS += -L$$PWD/../../../boost_1_69_0/lib/ -llibboost_atomic-vc141-mt-gd-x64-1_69
 
-INCLUDEPATH += $$PWD/../../../boost_1_69_0
-DEPENDPATH += $$PWD/../../../boost_1_69_0
+win32: LIBS += -L$$PWD/../../../boost/boost_mingw_53_32/lib/ -llibboost_atomic-mgw53-mt-d-x32-1_69.dll
 
-win32: LIBS += -L$$PWD/../../../boost_1_69_0/lib/ -llibboost_context-vc141-mt-sgd-x64-1_69
+INCLUDEPATH += $$PWD/../../../boost/boost_mingw_53_32/include
+DEPENDPATH += $$PWD/../../../boost/boost_mingw_53_32/include
 
-INCLUDEPATH += $$PWD/../../../boost_1_69_0
-DEPENDPATH += $$PWD/../../../boost_1_69_0
+win32: LIBS += -L$$PWD/../../../boost/boost_mingw_53_32/lib/ -llibboost_container-mgw53-mt-d-x32-1_69.dll
 
-win32: LIBS += -L$$PWD/../../../boost_1_69_0/lib/ -llibboost_program_options-vc141-mt-gd-x64-1_69
+INCLUDEPATH += $$PWD/../../../boost/boost_mingw_53_32/include
+DEPENDPATH += $$PWD/../../../boost/boost_mingw_53_32/include
 
-INCLUDEPATH += $$PWD/../../../boost_1_69_0
-DEPENDPATH += $$PWD/../../../boost_1_69_0
+win32: LIBS += -L$$PWD/../../../boost/boost_mingw_53_32/lib/ -llibboost_context-mgw53-mt-d-x32-1_69.dll
 
-win32: LIBS += -L$$PWD/../../../boost_1_69_0/lib/ -llibboost_system-vc141-mt-gd-x64-1_69
+INCLUDEPATH += $$PWD/../../../boost/boost_mingw_53_32/include
+DEPENDPATH += $$PWD/../../../boost/boost_mingw_53_32/include
 
-INCLUDEPATH += $$PWD/../../../boost_1_69_0
-DEPENDPATH += $$PWD/../../../boost_1_69_0
+win32: LIBS += -L$$PWD/../../../boost/boost_mingw_53_32/lib/ -lboost_system-mgw53-mt-d-x32-1_69
 
-win32: LIBS += -L$$PWD/../../../boost_1_69_0/lib/ -llibboost_regex-vc141-mt-gd-x64-1_69
+INCLUDEPATH += $$PWD/../../../boost/boost_mingw_53_32/include
+DEPENDPATH += $$PWD/../../../boost/boost_mingw_53_32/include
 
-INCLUDEPATH += $$PWD/../../../boost_1_69_0
-DEPENDPATH += $$PWD/../../../boost_1_69_0
+win32: LIBS += -L$$PWD/../../../boost/boost_mingw_53_32/lib/ -llibboost_program_options-mgw53-mt-d-x32-1_69.dll
 
-win32: LIBS += -L$$PWD/../../../boost_1_69_0/lib/ -llibboost_iostreams-vc141-mt-gd-x64-1_69
-
-INCLUDEPATH += $$PWD/../../../boost_1_69_0
-DEPENDPATH += $$PWD/../../../boost_1_69_0
-
-win32: LIBS += -L$$PWD/../../../boost_1_69_0/lib/ -llibboost_filesystem-vc141-mt-gd-x64-1_69
-
-INCLUDEPATH += $$PWD/../../../boost_1_69_0
-DEPENDPATH += $$PWD/../../../boost_1_69_0
-
-win32: LIBS += -L$$PWD/../../../boost_1_69_0/lib/ -llibboost_iostreams-vc141-mt-gd-x64-1_69
-
-INCLUDEPATH += $$PWD/../../../boost_1_69_0
-DEPENDPATH += $$PWD/../../../boost_1_69_0
+INCLUDEPATH += $$PWD/../../../boost/boost_mingw_53_32/include
+DEPENDPATH += $$PWD/../../../boost/boost_mingw_53_32/include

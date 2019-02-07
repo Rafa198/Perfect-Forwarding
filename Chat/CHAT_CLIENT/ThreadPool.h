@@ -78,7 +78,6 @@ private:
       }
     }
   }
-
   boost::asio::io_service::work* work_;
   boost::thread_group threadGroup_; 
 

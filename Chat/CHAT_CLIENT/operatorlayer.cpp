@@ -21,20 +21,21 @@ OperatorLayer::OperatorLayer(QQmlApplicationEngine &engine, boost::asio::io_serv
 
   client_->setReadHandle([this](ChatMessage &chatMessage){
 
-    if(chatMessage.getFlagToMessage() == ChatMessage::Flags::MESSAGE)
-      {
-        chatModel_->add(QString::fromUtf8(chatMessage.getBody(), chatMessage.getBodySize()));
-      }
-    else
-      {
-        QByteArray str = QByteArray(chatMessage.getBody(), chatMessage.getBodySize());
-        auto filename = str.mid(0, str.indexOf('|'));
-        std::string str1 = str.mid(str.indexOf('|') + 1).toStdString();
 
-        std::ofstream out(filename.toStdString(), std::ios::binary | std::ofstream::app);
-        out.write(str1.c_str(), str1.length());
-        out.close();
-      }
+    if(chatMessage.getFlagToMessage() == ChatMessage::Flags::MESSAGE)
+    {
+      chatModel_->add(QString::fromUtf8(chatMessage.getBody(), chatMessage.getBodySize()));
+    }
+    else      
+    {
+      QByteArray str = QByteArray(chatMessage.getBody(), chatMessage.getBodySize());
+      auto filename = str.mid(0, str.indexOf('|'));
+      std::string str1 = str.mid(str.indexOf('|') + 1).toStdString();
+
+      std::ofstream out(filename.toStdString(), std::ios::binary | std::ofstream::app);
+      out.write(str1.c_str(), str1.length());
+      out.close();
+    }
   });
 }
 
@@ -43,6 +44,8 @@ OperatorLayer::~OperatorLayer()
   if (client_)
   {
     delete client_;
+    delete chatModel_;
     client_ = nullptr;
+    chatModel_ = nullptr;
   }
 }

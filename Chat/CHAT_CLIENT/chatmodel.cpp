@@ -18,19 +18,21 @@ int ChatModel::rowCount(const QModelIndex &parent) const
 QVariant ChatModel::data(const QModelIndex &index, int role) const
 {
 
-  if(!index.isValid())
-    {
-      return QVariant();
-    }
+  if(!index.isValid())    
+  {
+      return QVariant();    
+  }
+
   const ModelData& data = modelData_[index.row()];
+
   switch (role) {
     case ChatModel::Roles::UserNameRole:
       return data.userName;
     case ChatModel::Roles::MessageRole:
       return data.message;
     default:
-        return QVariant();
-    }
+        return QVariant();    
+  }
 }
 
 QHash<int, QByteArray> ChatModel::roleNames() const
@@ -47,14 +49,12 @@ void ChatModel::add(const QString &text)
 {
    auto x = [this](const QString &str)
    {
-
-   QStringList str1 = str.split('|');
-
-   changed(str1[0], str1[1]);
+     QStringList str1 = str.split('|');
+     changed(str1[0], str1[1]);
    };
 
-    std::thread th(x,text);
-    th.join();
+   std::thread th(x,text);
+   th.join();
 }
 
 void ChatModel::insertInList(const QString &userName,const QString &message)

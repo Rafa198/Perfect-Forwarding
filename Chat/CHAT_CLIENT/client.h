@@ -11,6 +11,7 @@
 #include <string>
 #include <queue>
 #include <fstream>
+#include <mutex>
 
 #include <message.h>
 
@@ -44,17 +45,14 @@ private:
 private:
   io_service& service_;
   tcp::socket socket_;
-  boost::system::error_code error_;
   ChatMessage readMsg_;
   chatMessageQueue writeMsg_;
   ReadHandle handle_;
   std::ifstream ifs_;
 
 private:
-  static const unsigned int fileBufSize = 1024 * 32;
-  char* fileBuffer;
-  long long int fileSize;
-  long long int sendBytes;
+  static const unsigned int fileBufSize = 1024 * 16;
+  char fileBuffer[fileBufSize];
 };
 
 #endif // CLIENT_H

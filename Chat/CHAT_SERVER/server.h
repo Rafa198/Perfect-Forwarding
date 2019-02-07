@@ -8,7 +8,6 @@
 
 #include <deque>
 #include <set>
-#include <fstream>
 #include <iostream>
 
 #include <message.h>
@@ -34,8 +33,8 @@ public:
   void deliver(const ChatMessage& msg);
 
 private:
-  std::set<chatParticipant_ptr> participants_;
   enum { max_recent_msgs = 100};
+  std::set<chatParticipant_ptr> participants_;  
   chatMessageQueue recentMsgs_;
 };
 
@@ -70,8 +69,8 @@ private:
 class Server
 {
 public:
-  Server(boost::asio::io_service& io_context, const tcp::endpoint &endpoint)
-    : acceptor_(io_context, endpoint)
+  Server(boost::asio::io_service& service, const tcp::endpoint &endpoint)
+    : acceptor_(service, endpoint)
   {
     do_accept();
   }

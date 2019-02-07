@@ -2,6 +2,7 @@
 #define MESSAGE_H
 
 #include <string>
+#include <iostream>
 
 class ChatMessage {
 public:
@@ -13,8 +14,8 @@ public:
 
   struct msgInfo {
     Flags flag = Flags::MESSAGE;
-    unsigned long long int userNameSize = 0;
-    unsigned long long int messageSize = 0;
+    unsigned int userNameSize = 0;
+    unsigned int messageSize = 0;
   };
 
   ChatMessage()
@@ -27,7 +28,7 @@ public:
     : buffer_(nullptr)
     , msgInfo_(chatMessage.msgInfo_)
   {
-    unsigned long long int size = msgInfo_.userNameSize + msgInfo_.messageSize + sizeof (msgInfo);
+    unsigned int size = msgInfo_.userNameSize + msgInfo_.messageSize + sizeof (msgInfo);
     buffer_ = new char[size];
     memcpy(buffer_, chatMessage.buffer_, size);
   }
@@ -48,38 +49,38 @@ public:
 
   ~ChatMessage()
   {
-    if(buffer_)
-      {
-        delete[] buffer_;
-        buffer_ = nullptr;
-      }
+    if(buffer_)     
+    {
+      delete[] buffer_;
+      buffer_ = nullptr;
+    }
   }
 
   void allocate()
   {
-    if(buffer_ == nullptr)
-      {
-        unsigned long long int size = msgInfo_.messageSize + msgInfo_.userNameSize + sizeof(msgInfo);
+    if(buffer_ == nullptr)     
+    {
+      unsigned long long int size = msgInfo_.messageSize + msgInfo_.userNameSize + sizeof(msgInfo);
 
-        try
-        {
-          buffer_ = new char[size];
-          memcpy(buffer_, &msgInfo_, sizeof (msgInfo));
-        }
-        catch (std::exception ex)
-        {
-          throw std::runtime_error(ex.what());
-        }
+      try
+      {
+        buffer_ = new char[size];
+        memcpy(buffer_, &msgInfo_, sizeof (msgInfo));
       }
+      catch (std::exception ex)
+      {
+        throw std::runtime_error(ex.what());
+      }
+    }
   }
 
   void deleteBuf()
   {
-    if(buffer_)
-      {
-        delete[] buffer_;
-        buffer_ = nullptr;
-      }
+    if(buffer_)     
+    {
+      delete[] buffer_;
+      buffer_ = nullptr;
+    }
   }
 
   char* getBuffer()
@@ -97,12 +98,12 @@ public:
     return (buffer_ + sizeof (msgInfo));
   }
 
-  unsigned long long int getBodySize() const noexcept
+  unsigned int getBodySize() const noexcept
   {
     return (msgInfo_.messageSize + msgInfo_.userNameSize);
   }
 
-  unsigned long long int getSize() const
+  unsigned int getSize() const
   {
     return (getBodySize() + sizeof (msgInfo));
   }
