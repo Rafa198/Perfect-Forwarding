@@ -3,246 +3,120 @@ import QtQuick.Controls 2.4
 import QtQuick.Controls.Material 2.3
 import QtQuick.Layouts 1.3
 import QtQuick.Dialogs 1.2
+import Qt.labs.platform 1.0
 
 ApplicationWindow {
-    id: main
+    id: window
     visible: true
-    width: 640
-    height: 480
-    title: "CHAT APPLICATION"
+    flags: Qt.FramelessWindowHint
+    width: 540
+    height: 640
 
     property string user: ""
+    property int previousX
+    property int previousY
 
-    function basename(str){
-        return (str.slice(str.lastIndexOf("/") + 1))
+    onClosing: {
+        cl.close()
+        close.accepted = true;
     }
 
-    FileDialog {
-        id: fileDialog
-        title: "Выберите папку с изображениями"
+    StackView {
+        id: stackView
+        anchors.fill: parent
+        initialItem: RegPage {}
+    }
 
-        onAccepted: {
-            cl.sendMessage("System", "Пользователь: " + user + " отправил(а) файл: " + basename(fileUrl.toString()))
-            cl.sendFile(fileDialog.fileUrl, basename(fileUrl.toString()))            
+    SystemTrayIcon {
+        visible: true
+        iconSource: "image/chat.png"
+
+        onActivated: {
+            window.show()
+            window.requestActivate()
         }
     }
 
-    Rectangle {
-        id: register
-        width: 400
-        height: 200
-        anchors.centerIn: parent
-        color: Material.color(Material.LightBlue)
+    MouseArea {
+        id: topArea
+        height: 5
+        anchors {
+            top: parent.top
+            left: parent.left
+            right: parent.right
+        }
+        cursorShape: Qt.SizeVerCursor
 
-        TextInput {
-            id: userNameInput
-            width: register.width / 2
-            height: 25
-            anchors.centerIn: parent
-            text: "Enter NickName"
-            font.pointSize: 10
-
-            Label {
-                id: textInputLabel
-                width: userNameInput.width
-                anchors.bottom: userNameInput.top
-                text: "Name:"
-            }
+        onPressed: {
+            previousY = mouseY
         }
 
-        Button {
-            id: regUser
-            width: register.width
-            height: 50
-            anchors.bottom: register.bottom
-            anchors.centerIn: register.bottom
-            text: "Enter"
-
-            onClicked: {
-                if(userNameInput.text.length > 0 && userNameInput.text !== "") {
-                    user = userNameInput.text
-                    register.visible = false;
-                    layout.visible = true;
-                    columnLayout.visible = true;
-                }
-                else {
-                    userNameInput.text = "Error! Enter a name!!!"
-                }
-            }
+        onMouseYChanged: {
+            var dy = mouseY - previousY
+            window.setY(window.y + dy)
+            window.setHeight(window.height - dy)
         }
     }
 
-    RowLayout {
-        id: layout
-        width: parent.width / 4
-        height: parent.height
-        anchors.left: parent.left
-        visible: false
-        spacing: 5
+    MouseArea {
+        id: bottomArea
+        height: 5
+        anchors {
+            bottom: parent.bottom
+            left: parent.left
+            right: parent.right
+        }
+        cursorShape: Qt.SizeVerCursor
 
-        Item {
-            Layout.fillWidth: true            
-            Layout.preferredWidth: parent.width / 3
-            Layout.maximumWidth: parent.width
-            Layout.minimumHeight: parent.height
-            Layout.minimumWidth: parent.width / 3
+        onPressed: {
+            previousY = mouseY
+        }
 
-            ColumnLayout {
-                width: layout.width
-
-                Button {
-                    Layout.fillWidth: true
-                    Layout.preferredHeight: 50
-                    text: "MENU"
-                }
-
-                Button {
-                    Layout.fillWidth: true
-                    Layout.preferredHeight: 50
-                    text: "SETTINGS"
-                }
-            }
+        onMouseYChanged: {
+            var dy = mouseY - previousY
+            window.setHeight(window.height + dy)
         }
     }
 
-    ColumnLayout {
-        id: columnLayout
-        visible: false
-        height: parent.height
-        width: parent.width - layout.width
-        anchors.left: layout.right        
-        spacing: 5
+    MouseArea {
+        id: leftArea
+        width: 5
+        anchors {
+            top: topArea.bottom
+            bottom: bottomArea.top
+            left: parent.left
+        }
+        cursorShape: Qt.SizeHorCursor
 
-        Item {
-            id: mainItem
-            Layout.fillWidth: true
-            Layout.fillHeight: true
-            Layout.preferredWidth: parent.width - (parent.width / 3)
-            Layout.preferredHeight: parent.height - sendButton.height
-            Material.background: Material.Grey
+        onPressed: {
+            previousX = mouseX
+        }
 
-            Item {
-                id: messageRec
-                anchors.right: parent.right
-                anchors.bottom: pane.top
-                anchors.left: parent.left
-                anchors.top: parent.top
+        onMouseXChanged: {
+            var dx = mouseX - previousX
+            window.setX(window.x + dx)
+            window.setWidth(window.width - dx)
+        }
+    }
 
-                ColumnLayout {
-                    anchors.fill: parent
+    MouseArea {
+        id: rightArea
+        width: 5
+        anchors {
+            top: topArea.bottom
+            bottom: bottomArea.top
+            right: parent.right
+        }
+        cursorShape:  Qt.SizeHorCursor
 
-                ListView {                   
-                    id: viewM
-                    Layout.fillWidth: true
-                    Layout.preferredHeight: messageRec.height - pane.height - 25
-                    Layout.margins: pane.leftPadding + messageField.leftPadding
-                    verticalLayoutDirection: ListView.TopToBottom                    
-                    displayMarginBeginning: 40
-                    displayMarginEnd: 40                    
-                    model: chmod
-                    spacing: 6
+        onPressed: {
+            previousX = mouseX
+        }
 
-                    delegate: RowLayout {                     
-                        Layout.maximumWidth: parent.height / 2
-                        spacing: 2
-
-                     Rectangle {
-                         id: msgItem
-                         width: Math.min(text1.implicitWidth + 24, viewM.width - viewM.spacing)
-                         height: text1.implicitHeight + 24
-                         color: Material.color(Material.LightBlue)                        
-
-                         Label {
-                             id: text1
-                             anchors.fill: parent
-                             anchors.margins: 12
-                             text: userName + "\n" + message
-                             color: "white"
-                             wrapMode: Label.Wrap
-                         }                     
-                     }
-                    }
-
-                    Flickable {                       
-                        Layout.fillWidth: viewM.width
-                        Layout.preferredHeight: viewM.height - 25
-
-                        ScrollBar.vertical: ScrollBar {
-                            id: scroll
-                            parent: messageRec
-                            Layout.alignment: Qt.AlignTop | Qt.AlignLeft
-                            active: true                            
-
-                            onHeightChanged: {
-                                scroll.increase()
-                            }
-                        }
-                    }
-                }
-                }
-            }
-
-            Pane {                
-                id: pane
-                width: mainItem.width
-                anchors.bottom: mainItem.bottom                
-                Layout.fillWidth: true
-                background: Material.color(Material.Black)
-                Material.foreground: Material.Black
-                Material.elevation: 6
-                Material.theme: Material.Dark
-
-                RowLayout {
-                    width: mainItem.width
-
-                    Button {                       
-                        id: sendFileButton
-                        height: 45
-                        width: parent / 4
-                        Layout.alignment: Qt.AlignLeft | Qt.AlignBottom
-
-                        Image {
-                            height: parent
-                            width: parent
-                            source: "file:/QtProjects/chatproject/CHAT_CLIENT/res/upFile.png"
-                        }
-
-                        onClicked: {
-                            fileDialog.open()
-                        }
-                    }
-
-                    TextArea {
-                        id: messageField                        
-                        Layout.fillWidth: true
-                        placeholderText: "Compose message"
-                        wrapMode: TextArea.Wrap
-                    }
-
-                    Button {
-                        id: sendButton
-                        visible: true
-                        width: parent.width / 4
-                        height: 40
-                        Layout.alignment: Qt.AlignRight | Qt.AlignBottom
-                        text: "Отправить"
-                        Material.background: Material.Blue
-                        highlighted: true
-                        enabled: messageField.length > 0
-
-                        onClicked: {
-                            if(messageField.length > 0) {                             
-                                cl.sendMessage(user, messageField.text);
-                                messageField.clear()
-                                scroll.increase()
-                            }
-                            else {
-                                console.log("empty text input!!!")
-                            }
-                        }
-                    }
-                }
-            }
+        onMouseXChanged: {
+            var dx = mouseX - previousX
+            window.setWidth(window.width + dx)
         }
     }
 }
+

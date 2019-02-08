@@ -16,7 +16,7 @@ SOURCES += \
         main.cpp \
     client.cpp \
     chatmodel.cpp \
-    operatorlayer.cpp
+    operatorlayer.cpp \
 
 RESOURCES += qml.qrc
 
@@ -41,12 +41,9 @@ HEADERS += \
     chatmodel.h \
     ../message.h \
     ThreadPool.h \
-    operatorlayer.h
+    operatorlayer.h \
+
 INCLUDEPATH += $$PWD/../
-
-
-DISTFILES += \
-    res/upFile.png
 
 win32: LIBS += -L$$PWD/../../../boost/boost_mingw_53_32/lib/ -llibboost_atomic-mgw53-mt-d-x32-1_69.dll
 

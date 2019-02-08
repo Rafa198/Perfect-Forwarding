@@ -11,7 +11,6 @@
 #include <string>
 #include <queue>
 #include <fstream>
-#include <mutex>
 
 #include <message.h>
 
@@ -32,9 +31,15 @@ public:
   Q_INVOKABLE void sendFile(const QString &filePath, const QString &user);
 
   void write(const ChatMessage &msg);
-  void close();
+  Q_INVOKABLE void close();
 
   inline void setReadHandle(const ReadHandle& handle) { handle_ = handle; }
+
+//signals:
+//void closeApp();
+
+//public slots:
+//  void onCloseApp();
 
 private:
   void doConnect(const tcp::resolver::results_type& endpoints);

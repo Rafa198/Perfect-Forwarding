@@ -9,8 +9,9 @@ OperatorLayer::OperatorLayer(QQmlApplicationEngine &engine, boost::asio::io_serv
   , chatModel_(nullptr)
   , client_(nullptr)
 {
+
   boost::asio::ip::tcp::resolver resolver(service);
-  boost::asio::ip::tcp::endpoint epoint(boost::asio::ip::address::from_string("127.0.0.1"), 1234);
+  boost::asio::ip::tcp::endpoint epoint(boost::asio::ip::address::from_string("192.168.2.233"), 1234);
   auto epointI = resolver.resolve(epoint);
 
   client_ = new Client(service, epointI);
@@ -19,7 +20,7 @@ OperatorLayer::OperatorLayer(QQmlApplicationEngine &engine, boost::asio::io_serv
   engine.rootContext()->setContextProperty("cl", client_);
   engine.rootContext()->setContextProperty("chmod", chatModel_);
 
-  client_->setReadHandle([this](ChatMessage &chatMessage){
+  client_->setReadHandle([this](ChatMessage &chatMessage) {
 
 
     if(chatMessage.getFlagToMessage() == ChatMessage::Flags::MESSAGE)
@@ -37,6 +38,7 @@ OperatorLayer::OperatorLayer(QQmlApplicationEngine &engine, boost::asio::io_serv
       out.close();
     }
   });
+
 }
 
 OperatorLayer::~OperatorLayer()
