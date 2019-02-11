@@ -28,8 +28,7 @@ public:
   Client(io_service& service, const tcp::resolver::results_type& endpoints);
 
   Q_INVOKABLE void sendMessage(QString user, QString mes);
-  Q_INVOKABLE void sendFile(const QString &filePath, const QString &user);
-
+  Q_INVOKABLE void sendFile(const QString &filePath1, const QString &user1);
   void write(const ChatMessage &msg);
   Q_INVOKABLE void close();
 

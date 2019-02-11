@@ -2,5 +2,15 @@
     <qresource prefix="/">
         <file>main.qml</file>
         <file>qtquickcontrols2.conf</file>
+        <file>ChatPage.qml</file>
+        <file>ChatToolBar.qml</file>
+        <file>RegPage.qml</file>
+    </qresource>
+    <qresource prefix="/image">
+        <file>chat.png</file>
+        <file>curriculum.png</file>
+        <file>menu.png</file>
+        <file>sendFile.png</file>
+        <file>sendMessage.png</file>
     </qresource>
 </RCC>
