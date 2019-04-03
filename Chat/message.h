@@ -1,121 +1,115 @@
 #ifndef MESSAGE_H
 #define MESSAGE_H
-
 #include <string>
 #include <iostream>
-
-class ChatMessage {
+#include <cstring>
+class chat_message
+{
 public:
 
-  enum class Flags {
-    MESSAGE,
-    FILE
-  };
 
-  struct msgInfo {
-    Flags flag = Flags::MESSAGE;
-    unsigned int userNameSize = 0;
-    unsigned int messageSize = 0;
-  };
+    enum { header_length = 4 };
+    enum { max_body_length = 16777216 };// максимальный размер сообщения 16 Мб
 
-  ChatMessage()
-    : buffer_(nullptr)
-  { }
-
-  ChatMessage(ChatMessage&&) = delete;
-
-  ChatMessage(const ChatMessage &chatMessage)
-    : buffer_(nullptr)
-    , msgInfo_(chatMessage.msgInfo_)
-  {
-    unsigned int size = msgInfo_.userNameSize + msgInfo_.messageSize + sizeof (msgInfo);
-    buffer_ = new char[size];
-    memcpy(buffer_, chatMessage.buffer_, size);
-  }
-
- ChatMessage(const std::string &userName, const std::string &message, Flags flag = Flags::MESSAGE)
-   : buffer_(nullptr)
- {
-   msgInfo_.userNameSize = userName.length();
-   msgInfo_.messageSize = message.length();
-   msgInfo_.flag = flag;
-
-   buffer_ = new char[msgInfo_.userNameSize + msgInfo_.messageSize + sizeof (msgInfo)];
-
-   memcpy(buffer_, &msgInfo_, sizeof (msgInfo));
-   memcpy(buffer_ + sizeof (msgInfo), userName.c_str(), msgInfo_.userNameSize);
-   memcpy(buffer_ + sizeof (msgInfo) + msgInfo_.userNameSize, message.c_str(), msgInfo_.messageSize);
- }
-
-  ~ChatMessage()
-  {
-    if(buffer_)     
+    enum class Flags
     {
-      delete[] buffer_;
-      buffer_ = nullptr;
-    }
-  }
+        MESSAGE,
+        FILE
+    };
 
-  void allocate()
-  {
-    if(buffer_ == nullptr)     
+    struct msgInfo
     {
-      unsigned long long int size = msgInfo_.messageSize + msgInfo_.userNameSize + sizeof(msgInfo);
+        Flags flag = Flags::MESSAGE;
+        unsigned int userNameSize = 0;
+        unsigned int messageSize = 0;
+    };
 
-      try
-      {
-        buffer_ = new char[size];
-        memcpy(buffer_, &msgInfo_, sizeof (msgInfo));
-      }
-      catch (std::exception ex)
-      {
-        throw std::runtime_error(ex.what());
-      }
-    }
-  }
-
-  void deleteBuf()
-  {
-    if(buffer_)     
+    chat_message(const std::string &username, const std::string &message, Flags flag = Flags::MESSAGE)
+            : data_()
     {
-      delete[] buffer_;
-      buffer_ = nullptr;
+        msgInfo_.userNameSize = username.length();
+        msgInfo_.messageSize = message.length();
+        msgInfo_.flag = flag;
+        body_length_ = msgInfo_.userNameSize + msgInfo_.messageSize + sizeof(msgInfo);
+        memcpy(data_, &msgInfo_, sizeof(msgInfo));
+        memcpy(data_ + sizeof(msgInfo), username.c_str(), msgInfo_.userNameSize);
+        memcpy(data_ + sizeof(msgInfo) + msgInfo_.userNameSize, message.c_str(), msgInfo_.messageSize);
+
     }
-  }
+    chat_message()
+            : data_()
+              , body_length_(0)
+    {
 
-  char* getBuffer()
-  {
-    return buffer_;
-  }
+    }
 
-  char* getHeader()
-  {
-    return reinterpret_cast<char*>(&msgInfo_);
-  }
+    const char* data() const
+    {
+        return data_;
+    }
 
-  char* getBody()
-  {
-    return (buffer_ + sizeof (msgInfo));
-  }
+    char* data()
+    {
+        return data_;
+    }
 
-  unsigned int getBodySize() const noexcept
-  {
-    return (msgInfo_.messageSize + msgInfo_.userNameSize);
-  }
+    size_t length() const
+    {
+        return header_length + body_length_;
+    }
 
-  unsigned int getSize() const
-  {
-    return (getBodySize() + sizeof (msgInfo));
-  }
+    const char* body() const
+    {
+        return data_ + header_length;
+    }
 
-  Flags getFlagToMessage() const
-  {
-    return msgInfo_.flag;
-  }
+    char* body()
+    {
+        return data_ + header_length;
+    }
 
+    size_t body_length() const
+    {
+        return body_length_;
+    }
+
+    void body_length(size_t length)
+    {
+        body_length_ = length;
+        if (body_length_ > max_body_length)
+            body_length_ = max_body_length;
+    }
+
+    bool decode_header()
+    {
+        using namespace std; // For strncat and atoi.
+        char header[header_length + 1] = "";
+        strncat(header, data_, header_length);
+        body_length_ = stoi(header);
+        if (body_length_ > max_body_length) {
+            body_length_ = 0;
+            return false;
+        }
+        return true;
+    }
+
+    void encode_header()
+    {
+        using namespace std; // For sprintf and memcpy.
+        char header[header_length + 1] = "";
+        sprintf(header, "%4zu", body_length_);
+        memcpy(data_, header, header_length);
+    }
+
+    Flags getFlagToMessage() const
+    {
+        return msgInfo_.flag;
+    }
 private:
-  char* buffer_;
-  msgInfo msgInfo_;
+    char data_[header_length + max_body_length];
+    size_t body_length_;
+    msgInfo msgInfo_;
 };
+
 
 #endif // MESSAGE_H

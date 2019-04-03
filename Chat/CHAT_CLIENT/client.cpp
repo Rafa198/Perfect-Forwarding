@@ -1,152 +1,147 @@
 #include "client.h"
-
 #include <thread>
-
 #include <QUrl>
-
 #include <boost/filesystem.hpp>
+#include <boost/asio.hpp>
 
-Client::Client(io_service &service, const tcp::resolver::results_type& endpoints)
-  : service_(service)
-  , socket_(service)
+chat_client::chat_client(boost::asio::io_service &io_service, tcp::resolver::iterator endpoint_iterator)
+        : io_service_(io_service),
+        socket_(io_service)
 {
-  doConnect(endpoints);
+    tcp::endpoint endpoint = *endpoint_iterator;
+    socket_.async_connect(endpoint,
+                          boost::bind(&chat_client::handle_connect, this,
+                                      boost::asio::placeholders::error, ++endpoint_iterator));
 }
 
-void Client::sendMessage(QString user, QString mes)
+void chat_client::write(const chat_message &msg)
 {
-  ChatMessage m((user + "|").toStdString(), mes.toStdString());
-
-  std::this_thread::sleep_for(chrono::milliseconds(10));
-  write(m);
+    io_service_.post(boost::bind(&chat_client::do_write, this, msg));
 }
 
-void Client::sendFile(const QString &filePath1, const QString &user1)
+void chat_client::close()
 {
-  auto x = [this](const QString &filePath, const QString &user)
-  {
-    unsigned long long sendBytes = 0;
-    auto path = QUrl(filePath).toLocalFile();
-    unsigned long long fileSize = boost::filesystem::file_size(path.toStdString());
-    ifs_.open(path.toStdString(), std::ios::binary);
+    io_service_.post(boost::bind(&chat_client::do_close, this));
+}
 
-    if(!ifs_.is_open())
-    {
-        throw std::runtime_error("Unable to open input file");
+void chat_client::handle_connect(const boost::system::error_code &error, tcp::resolver::iterator endpoint_iterator)
+{
+    if (!error) {
+        boost::asio::async_read(socket_,
+                                boost::asio::buffer(read_msg_.data(), chat_message::header_length),
+                                boost::bind(&chat_client::handle_read_header, this,
+                                            boost::asio::placeholders::error));
+    } else if (endpoint_iterator != tcp::resolver::iterator()) {
+        socket_.close();
+        tcp::endpoint endpoint = *endpoint_iterator;
+        socket_.async_connect(endpoint,
+                              boost::bind(&chat_client::handle_connect, this,
+                                          boost::asio::placeholders::error, ++endpoint_iterator));
     }
-
-    unsigned long long difference = 0;
-    unsigned long long dSize = 0;
-
-    while(sendBytes < fileSize)
-    {
-      difference = fileSize - sendBytes;
-      dSize = fileBufSize;
-
-      if(difference < fileBufSize)
-      {
-        dSize = difference;
-      }
-
-      ifs_.read(fileBuffer, dSize);
-      sendBytes += dSize;
-      std::this_thread::sleep_for(chrono::milliseconds(10));
-      ChatMessage mes(user.toStdString() + "|", std::string(fileBuffer, dSize), ChatMessage::Flags::FILE);
-      write(mes);
-    }
-    ifs_.close();
-  };
-  std::thread th(x,filePath1, user1);
-  th.join();
 }
 
-void Client::write(const ChatMessage &msg)
+void chat_client::handle_read_header(const boost::system::error_code &error)
 {
-  boost::asio::post(service_, [this, msg]()
-  {     
-      bool writeInProgress = !writeMsg_.empty();
-      writeMsg_.push_back(msg);
+    if (!error && read_msg_.decode_header()) {
+        boost::asio::async_read(socket_,
+                                boost::asio::buffer(read_msg_.body(), read_msg_.body_length()),
+                                boost::bind(&chat_client::handle_read_body, this,
+                                            boost::asio::placeholders::error));
+    } else {
+        do_close();
+    }
+}
 
-      if(!writeInProgress)
-        {
-          doWrite();
+void chat_client::handle_read_body(const boost::system::error_code &error)
+{
+    if (!error) {
+        std::cout.write(read_msg_.body(), read_msg_.body_length());
+        std::cout << "\n";
+        boost::asio::async_read(socket_,
+                                boost::asio::buffer(read_msg_.data(), chat_message::header_length),
+                                boost::bind(&chat_client::handle_read_header, this,
+                                            boost::asio::placeholders::error));
+    } else {
+        do_close();
+    }
+}
+
+void chat_client::do_write(chat_message msg)
+{
+    bool write_in_progress = !write_msgs_.empty();
+    write_msgs_.push_back(msg);
+    if (!write_in_progress) {
+        boost::asio::async_write(socket_,
+                                 boost::asio::buffer(write_msgs_.front().data(),
+                                                     write_msgs_.front().length()),
+                                 boost::bind(&chat_client::handle_write, this,
+                                             boost::asio::placeholders::error));
+    }
+}
+
+void chat_client::handle_write(const boost::system::error_code &error)
+{
+    if (!error) {
+        write_msgs_.pop_front();
+        if (!write_msgs_.empty()) {
+            boost::asio::async_write(socket_,
+                                     boost::asio::buffer(write_msgs_.front().data(),
+                                                         write_msgs_.front().length()),
+                                     boost::bind(&chat_client::handle_write, this,
+                                                 boost::asio::placeholders::error));
         }
-  });
+    } else {
+        do_close();
+    }
 }
 
-void Client::close()
+void chat_client::do_close()
 {
-  post(service_, [this]()
-  {
     socket_.close();
-  });
 }
 
-void Client::doConnect(const tcp::resolver::results_type& endpoints)
+void chat_client::sendMessage(const QString& user, const QString& mes)
 {
-  async_connect(socket_, endpoints, [this](boost::system::error_code ec, tcp::endpoint)
-  {
-    if (!ec)
-      {
-        doReadHeader();
-      }
-  });
+    chat_message message((user + "|").toStdString(), mes.toStdString());
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    message.encode_header();
+    write(message);
 }
 
-void Client::doReadHeader()
-{      
-  async_read(socket_, buffer(readMsg_.getHeader(), sizeof(ChatMessage::msgInfo)),
-              [this](boost::system::error_code ec, std::size_t /*length*/)      
-  {
-    if (!ec)      
-    {
-      readMsg_.deleteBuf();
-      readMsg_.allocate();
-      doReadBody();
-    }
-    else
-    {
-      socket_.close();
-    }
-  });
-}
-
-void Client::doReadBody()
-{      
-  async_read(socket_, buffer(readMsg_.getBody(), readMsg_.getBodySize()),
-              [this](boost::system::error_code ec, std::size_t /*length*/)
-  {
-    if (!ec)
-    {
-      if (handle_)
-      {
-        handle_(readMsg_);
-      }
-      doReadHeader();
-    }
-    else
-    {
-      socket_.close();
-    }
-  });
-}
-
-void Client::doWrite()
+void chat_client::sendFile(const QString &filename, const QString &username)
 {
-  async_write(socket_, buffer(writeMsg_.front().getBuffer(), writeMsg_.front().getSize()),
-         [this](boost::system::error_code ec, std::size_t /*length*/)
-  {
-    if (!ec)      
+    auto x = [this](const QString &filePath, const QString &user)
     {
-      writeMsg_.pop_front();
-      if (!writeMsg_.empty())
-      {
-        doWrite();
-      }
-    }
-    else
-    {
-      socket_.close();
-    }
-  });
+        unsigned long long sendBytes = 0;
+        auto path = QUrl(filePath).toLocalFile();
+        unsigned long long fileSize = boost::filesystem::file_size(path.toStdString());
+        ifs_.open(path.toStdString(), std::ios::binary);
+
+        if(!ifs_.is_open())
+        {
+            throw std::runtime_error("Unable to open input file");
+        }
+
+        unsigned long long difference = 0;
+        unsigned long long dSize = 0;
+
+        while(sendBytes < fileSize)
+        {
+            difference = fileSize - sendBytes;
+            dSize = file_buffer_size;
+
+            if(difference < file_buffer_size)
+            {
+                dSize = difference;
+            }
+
+            ifs_.read(file_buffer, dSize);
+            sendBytes += dSize;
+            std::this_thread::sleep_for(std::chrono::milliseconds(10));
+            chat_message mes(user.toStdString() + "|", std::string(file_buffer, dSize), chat_message::Flags::FILE);
+            write(mes);
+        }
+        ifs_.close();
+    };
+
 }

@@ -74,3 +74,6 @@ win32: LIBS += -L$$PWD/../../../boost/boost_mingw_53_32/lib/ -llibboost_filesyst
 
 INCLUDEPATH += $$PWD/../../../boost/boost_mingw_53_32/include
 DEPENDPATH += $$PWD/../../../boost/boost_mingw_53_32/include
+
+DISTFILES += \
+    CMakeLists.txt

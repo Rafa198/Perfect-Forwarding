@@ -17,35 +17,34 @@ bool exceptionHandle(const boost::exception_ptr&, const std::string&)
 
 int main(int argc, char *argv[])
 {
-  try
-  {
-    QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-    QGuiApplication app(argc, argv);
-    QQmlApplicationEngine engine;
+    try
+        {
+            QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+            QGuiApplication app(argc, argv);
+            QQmlApplicationEngine engine;
 
-    size_t cpuCount(!(boost::thread::hardware_concurrency()) ? 2 : boost::thread::hardware_concurrency() * 2);
-    boost::asio::io_service ioService(cpuCount);
-    std::srand(std::time(nullptr));
+            size_t cpuCount(!(boost::thread::hardware_concurrency()) ? 2 : boost::thread::hardware_concurrency() * 2);
+            boost::asio::io_service ioService(cpuCount);
+            std::srand(std::time(nullptr));
 
-    ThreadPool threadPool(ioService, cpuCount);
-    threadPool.setExceptionHandler(boost::bind(&exceptionHandle, _1, _2));
-    OperatorLayer *operLayer = new OperatorLayer(engine, ioService);
+            ThreadPool threadPool(ioService, cpuCount);
+            threadPool.setExceptionHandler(boost::bind(&exceptionHandle, _1, _2));
+            auto operLayer = new OperatorLayer(engine, ioService);
 
-    engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
+            engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
 
-    int returnCode = app.exec();
-    threadPool.stop();
-    delete operLayer;
-    operLayer = nullptr;
-    return returnCode;
-  }
-  catch (const std::exception& e)
-  {
-    qFatal("Unexpected error: %s", e.what());
-  }
-  catch (...)
-  {
-    qFatal("Unknown exception");
-  }
-
+            int returnCode = app.exec();
+            threadPool.stop();
+            delete operLayer;
+            operLayer = nullptr;
+            return returnCode;
+        }
+        catch (const std::exception& e)
+        {
+            qFatal("Unexpected error: %s", e.what());
+        }
+        catch (...)
+        {
+            qFatal("Unknown exception");
+        }
 }
