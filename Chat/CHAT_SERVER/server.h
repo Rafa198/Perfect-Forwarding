@@ -1,88 +1,91 @@
 #ifndef SERVER_H
 #define SERVER_H
+//----------------------------------------------------------------------
 
-#include <boost/thread.hpp>
-#include <boost/enable_shared_from_this.hpp>
-#include <boost/asio.hpp>
-#include <boost/bind.hpp>
+typedef std::deque<chat_message> chat_message_queue;
 
-#include <deque>
-#include <set>
-#include <iostream>
+//----------------------------------------------------------------------
 
-#include <message.h>
-
-using boost::asio::ip::tcp;
-
-typedef std::deque<ChatMessage> chatMessageQueue;
-
-class ChatParticipant
+class chat_participant
 {
 public:
-  virtual ~ChatParticipant() {}
-  virtual void deliver(const ChatMessage& msg) = 0;
+    virtual ~chat_participant() = default;
+    virtual void deliver(const chat_message& msg) = 0;
 };
 
-typedef std::shared_ptr<ChatParticipant> chatParticipant_ptr;
+typedef boost::shared_ptr<chat_participant> chat_participant_ptr;
 
-class ChatRoom
+//----------------------------------------------------------------------
+
+class chat_room
 {
 public:
-  void join(chatParticipant_ptr participant);
-  void leave(chatParticipant_ptr participant);
-  void deliver(const ChatMessage& msg);
+    void join(const chat_participant_ptr& participant);
+
+    void leave(const chat_participant_ptr& participant);
+
+    void deliver(const chat_message& msg);
 
 private:
-  enum { max_recent_msgs = 100};
-  std::set<chatParticipant_ptr> participants_;  
-  chatMessageQueue recentMsgs_;
+    std::set<chat_participant_ptr> participants_;
+    enum { max_recent_msgs = 100 };
+    chat_message_queue recent_msgs_;
 };
 
-typedef std::shared_ptr<ChatParticipant> chatParticipant_ptr;
+//----------------------------------------------------------------------
 
-class ChatSession : public ChatParticipant, public std::enable_shared_from_this<ChatSession>
+class chat_session
+        : public chat_participant,
+                public boost::enable_shared_from_this<chat_session>
 {
 public:
-  ChatSession(tcp::socket socket, ChatRoom& room)
-    : socket_(std::move(socket))
-    , room_(room)
-  { }
+    chat_session(boost::asio::io_service& io_service, chat_room& room)
+            : socket_(io_service),
+            room_(room)
+    {
+    }
 
-  ~ChatSession()
-  { }
+    tcp::socket& socket()
+    {
+        return socket_;
+    }
 
-  void start();
-  void deliver(const ChatMessage& msg);
+    void start();
+
+    void deliver(const chat_message& msg) override;
+
+    void handle_read_header(const boost::system::error_code& error);
+
+    void handle_read_body(const boost::system::error_code& error);
+
+    void handle_write(const boost::system::error_code& error);
 
 private:
-  void doReadHeader();
-  void doReadBody();
-  void doWrite();
-
-private:
-  tcp::socket socket_;
-  ChatRoom& room_;
-  ChatMessage readMsg_;
-  chatMessageQueue writeMsgs_;
+    tcp::socket socket_;
+    chat_room& room_;
+    chat_message read_msg_;
+    chat_message_queue write_msgs_;
 };
 
-class Server
+typedef boost::shared_ptr<chat_session> chat_session_ptr;
+
+//----------------------------------------------------------------------
+
+class chat_server
 {
 public:
-  Server(boost::asio::io_service& service, const tcp::endpoint &endpoint)
-    : acceptor_(service, endpoint)
-  {
-    do_accept();
-  }
+    chat_server(boost::asio::io_service& io_service,
+            const tcp::endpoint& endpoint);
+
+    void handle_accept(const chat_session_ptr& session,
+            const boost::system::error_code& error);
 
 private:
-  void do_accept();
-  void startAccept();
-  void handleAccept(ChatSession* psession, boost::system::error_code const& errcode);
-
-private:
-  tcp::acceptor acceptor_;
-  ChatRoom room_;
+    boost::asio::io_service& io_service_;
+    tcp::acceptor acceptor_;
+    chat_room room_;
 };
 
+typedef boost::shared_ptr<chat_server> chat_server_ptr;
+typedef std::list<chat_server_ptr> chat_server_list;
 #endif // SERVER_H
