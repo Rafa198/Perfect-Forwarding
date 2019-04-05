@@ -49,7 +49,16 @@ Page {
             return (str.slice(str.lastIndexOf("/") + 1))
     }
 
+    ProgressBar {
+        id: bar
 
+        from : 0
+        indeterminate : true
+        position : 0
+        to : 1.0
+        value : .0
+        visualPosition : 0
+    }
     FileDialog {
         id: fileDialog
         title: "Выберите папку с изображениями"
@@ -57,6 +66,12 @@ Page {
         onAccepted: {
             cl.sendMessage("System", "Пользователь: " + user + " отправил(а) файл: " + basename(fileUrl.toString()))
             cl.sendFile(fileDialog.fileUrl, basename(fileUrl.toString()))
+            bar.visible = true
+            for(var i = 0; i < 4; ++i)
+            {
+                bar.value += 0.25
+                sleep(1)
+            }
         }
     }
 
@@ -68,8 +83,6 @@ Page {
             Layout.fillHeight: true
             Layout.fillWidth: true
             Layout.margins: pane.leftPadding + messageField.leftPadding
-            displayMarginBeginning: 40
-            displayMarginEnd: 40
             verticalLayoutDirection: listView.BottomToTop
             spacing: 12
             model: chmod
