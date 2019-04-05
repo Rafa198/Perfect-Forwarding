@@ -18,7 +18,7 @@
 #include <string>
 #include <queue>
 #include <fstream>
-#include "message.h"
+#include "../message.h"
 
 using namespace boost::asio;
 using boost::asio::ip::tcp;

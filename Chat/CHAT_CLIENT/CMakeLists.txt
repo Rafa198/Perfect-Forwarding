@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10.2)
-project(qt_chat_client)
+project(chat_client)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_FLAGS "-O0 -pedantic-errors -Wextra -Wall -Winit-self -Wold-style-cast -Woverloaded-virtual -Wuninitialized -Wmissing-declarations -Wno-ignored-qualifiers -Wno-unused-parameter")
@@ -20,14 +20,14 @@ find_package(Qt5Network REQUIRED)
 set(SOURCE_FILES
         main.cpp
         qml.qrc
-        message.hpp
-        thread_pool.hpp
-        chat_model.cpp
-        chat_model.hpp
+        ../message.h
+        ThreadPool.h
+        chatmodel.cpp
+        chatmodel.h
         client.cpp
-        client.hpp
-        operator_layer.cpp
-        operator_layer.hpp)
+        client.h
+        operatorlayer.cpp
+        operatorlayer.h)
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES}  )
 target_link_libraries(${PROJECT_NAME}  ${Boost_LIBRARIES} Qt5::Core Qt5::Quick Qt5::Network)
