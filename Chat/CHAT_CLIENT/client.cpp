@@ -56,6 +56,10 @@ void chat_client::handle_read_header(const boost::system::error_code &error)
 void chat_client::handle_read_body(const boost::system::error_code &error)
 {
     if (!error) {
+
+        if (handle_) {
+            handle_(read_msg_);
+        }
         std::cout.write(read_msg_.body(), read_msg_.body_length());
         std::cout << "\n";
         boost::asio::async_read(socket_,
@@ -111,28 +115,26 @@ void chat_client::sendMessage(const QString& user, const QString& mes)
 
 void chat_client::sendFile(const QString &filename, const QString &username)
 {
-    auto x = [this](const QString &filePath, const QString &user)
-    {
+    auto x = [this](const QString &filePath, const QString &user) {
         unsigned long long sendBytes = 0;
         auto path = QUrl(filePath).toLocalFile();
         unsigned long long fileSize = boost::filesystem::file_size(path.toStdString());
         ifs_.open(path.toStdString(), std::ios::binary);
 
-        if(!ifs_.is_open())
-        {
+        if (!ifs_.is_open()) {
             throw std::runtime_error("Unable to open input file");
         }
 
         unsigned long long difference = 0;
         unsigned long long dSize = 0;
 
-        while(sendBytes < fileSize)
-        {
+        while (sendBytes < fileSize) {
+
             difference = fileSize - sendBytes;
             dSize = file_buffer_size;
 
-            if(difference < file_buffer_size)
-            {
+
+            if (difference < file_buffer_size) {
                 dSize = difference;
             }
 
