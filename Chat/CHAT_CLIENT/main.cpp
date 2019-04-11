@@ -7,8 +7,8 @@
 #include <boost/thread.hpp>
 #include <boost/bind.hpp>
 
-#include <operatorlayer.h>
-#include <ThreadPool.h>
+#include <cpp/operatorlayer.h>
+#include <cpp/ThreadPool.h>
 
 bool exceptionHandle(const boost::exception_ptr&, const std::string&)
 {
@@ -29,14 +29,14 @@ int main(int argc, char *argv[])
 
     ThreadPool threadPool(ioService, cpuCount);
     threadPool.setExceptionHandler(boost::bind(&exceptionHandle, _1, _2));
-    OperatorLayer *operLayer = new OperatorLayer(engine, ioService);
+    auto operator_layer = new OperatorLayer(engine, ioService);
 
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
 
     int returnCode = app.exec();
     threadPool.stop();
-    delete operLayer;
-    operLayer = nullptr;
+    delete operator_layer;
+    operator_layer = nullptr;
     return returnCode;
   }
   catch (const std::exception& e)

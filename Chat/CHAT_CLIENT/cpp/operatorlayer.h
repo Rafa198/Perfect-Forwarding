@@ -5,6 +5,8 @@
 #include <QObject>
 
 #include <boost/asio.hpp>
+#include "client.h"
+#include "chatmodel.h"
 
 class OperatorLayer : public QObject
 {
@@ -12,11 +14,12 @@ class OperatorLayer : public QObject
 
 public:
   OperatorLayer(QQmlApplicationEngine &engine, boost::asio::io_service &service);
-  ~OperatorLayer();
+  ~OperatorLayer() override;
 
 private:
-  class ChatModel* chatModel_;
-  class Client* client_;
+    ChatModel *m_chat_model;
+
+    chat_client *m_client;
 };
 
 #endif // OPERATORLAYER_H

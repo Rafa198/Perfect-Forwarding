@@ -42,7 +42,7 @@ Page {
                 if(login.text.length > 0) {
                     user = login.text
                     root.StackView.view.push("qrc:/ChatPage.qml")
-                    cl.sendMessage(user,"entered a chat")
+                    cl.send_message(user,"entered a chat")
                 }
             }
         }

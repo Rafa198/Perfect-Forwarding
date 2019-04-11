@@ -144,7 +144,7 @@ Page {
                     Image {
                         id: sendFileIco
                         anchors.fill: parent
-                        source: "image/sendFile.png"
+                        source: "image/send_file.png"
                     }
                     onClicked: fileDialog.open()
                 }
@@ -161,7 +161,7 @@ Page {
 
                     onClicked: {
                         if(messageField.length > 0) {
-                            cl.sendMessage(user, messageField.text);
+                            cl.send_message(user, messageField.text);
                             messageField.clear()
                         }
                     }
