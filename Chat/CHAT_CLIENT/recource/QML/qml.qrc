@@ -6,11 +6,11 @@
         <file>ChatToolBar.qml</file>
         <file>RegPage.qml</file>
     </qresource>
-<!--    <qresource prefix="/image">-->
-<!--        <file>chat.png</file>-->
-<!--        <file>curriculum.png</file>-->
-<!--        <file>menu.png</file>-->
-<!--        <file>send_file.png</file>-->
-<!--        <file>send_message.png</file>-->
-<!--    </qresource>-->
+    <qresource prefix="/images">
+        <file>images/chat.png</file>
+        <file>images/curriculum.png</file>
+        <file>images/menu.png</file>
+        <file>images/sendFile.png</file>
+        <file>images/sendMessage.png</file>
+    </qresource>
 </RCC>

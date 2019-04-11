@@ -29,7 +29,7 @@ ApplicationWindow {
 
     SystemTrayIcon {
         visible: true
-        iconSource: "image/chat.png"
+        iconSource: "qrc:/images/images/chat.png"
 
         onActivated: {
             window.show()

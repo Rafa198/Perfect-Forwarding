@@ -33,11 +33,11 @@ int main(int argc, char *argv[])
 
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
 
-    int returnCode = app.exec();
-    threadPool.stop();
-    delete operator_layer;
-    operator_layer = nullptr;
-    return returnCode;
+      int returnCode = app.exec();
+      threadPool.stop();
+      delete operator_layer;
+      return returnCode;
+
   }
   catch (const std::exception& e)
   {

@@ -21,7 +21,7 @@ Page {
         Image {
             id: regIco
             Layout.alignment: Qt.AlignCenter
-            source: "image/chat.png"
+            source: "qrc:/images/images/chat.png"
         }
 
         TextField {

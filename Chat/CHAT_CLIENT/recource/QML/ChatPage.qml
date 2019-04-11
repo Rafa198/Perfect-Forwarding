@@ -12,7 +12,7 @@ Page {
             Image {
                 id: menuIco
                 anchors.centerIn: parent
-                source: "image/menu.png"
+                source: "qrc:/images/images/menu.png"
             }
 
             anchors.left: parent.left
@@ -144,7 +144,7 @@ Page {
                     Image {
                         id: sendFileIco
                         anchors.fill: parent
-                        source: "image/send_file.png"
+                        source: "qrc:/images/images/sendFile.png"
                     }
                     onClicked: fileDialog.open()
                 }
@@ -156,7 +156,7 @@ Page {
 
                         id: sendMesIco
                         anchors.fill: parent
-                        source: "image/sendMessage.png"
+                        source: "qrc:/images/images/sendMessage.png"
                     }
 
                     onClicked: {
