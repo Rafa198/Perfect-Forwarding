@@ -9,7 +9,7 @@ public:
 
 
     enum { header_length = 4 };
-    enum { max_body_length = 16777216 };// максимальный размер сообщения 16 Мб
+    enum { max_body_length = 1024 };// максимальный размер сообщения 16 Мб
 
     enum class Flags
     {

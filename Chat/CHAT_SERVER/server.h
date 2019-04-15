@@ -1,5 +1,27 @@
 #ifndef SERVER_H
 #define SERVER_H
+#include <boost/system/error_code.hpp>
+#include <boost/asio.hpp>
+#include <boost/bind.hpp>
+#include <boost/enable_shared_from_this.hpp>
+#include <boost/bind.hpp>
+#include <boost/asio.hpp>
+#include <boost/thread.hpp>
+
+#include <cstdlib>
+#include <deque>
+#include <iostream>
+#include <cstdio>
+#include <cstring>
+#include <string>
+#include <queue>
+#include <fstream>
+
+#include "../message.h"
+using namespace boost::asio;
+using boost::asio::ip::tcp;
+
+using ip::tcp;
 //----------------------------------------------------------------------
 
 typedef std::deque<chat_message> chat_message_queue;
